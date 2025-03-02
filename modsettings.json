@@ -1,0 +1,27 @@
+{
+    "Version": "1.0",
+    "Sections": [
+        {
+            "Name": "General",
+            "Description": "",
+            "IsAdvanced": false,
+            "Keys": [
+                {
+                    "Value": true,
+                    "Name": "DisableFastTravel",
+                    "Description": "When this options is on, carriage drivers and magic will be the only ways to fast travel.",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Value": true,
+                    "Name": "AddCarriageFee",
+                    "Description": "Adds a small fee to the travel cost, as payment to the carriage drivers.",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                }
+            ],
+            "$version": "v1"
+        }
+    ]
+}
