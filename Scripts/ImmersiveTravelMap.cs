@@ -17,7 +17,6 @@ using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Utility.AssetInjection;
 using DaggerfallWorkshop.Game.Questing;
-using TravelOptions;
 
 namespace ImmersiveTravel{
     public class ImmersiveTravelMap : DaggerfallTravelMapWindow
