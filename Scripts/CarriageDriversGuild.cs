@@ -1,4 +1,4 @@
-﻿//This class implements the "carriage drivers" guild, now renamed to "Iliac Bay Transport Company" in-game.
+//This class implements the "carriage drivers" guild, now renamed to "Iliac Bay Transport Company" in-game.
 
 using System.Collections.Generic;
 using UnityEngine;
