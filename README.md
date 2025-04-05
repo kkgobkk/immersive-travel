@@ -1,4 +1,4 @@
-# immersive-travel
+# ImmersiveTravel
 
 A work-in-progress mod for Daggerfall Unity that implements Morrowrind-like fast travel.
 
@@ -7,7 +7,11 @@ Implemented features:
 - Carriage drivers can be talked to to initiate fast travel
 - You can no longer fast travel from anywhere
 - You can only fast travel to towns, but no longer to dungeons, temples or farms
+- Fast travel now cost 1 gold per day more as payment for the carriage driver
+- Beautiful Cities of Daggerfall compatibility (download the patch from BCOD nexus page)
+- Basic roads mod integration (the Immersive Travel map can now display the roads from BasicRoads)
+- Variable size location dots (similar to the Travel Options map)
 
 To-do list:
-- Better compatibility with other mods that modifiy fast travel and/or city blocks layout
+- Better compatibility with TravelOptions
 - Regional variants for carriage drivers (for instance desert regions could have camels instead of horses)
