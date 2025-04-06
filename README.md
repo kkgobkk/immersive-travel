@@ -1,6 +1,6 @@
 # ImmersiveTravel
 
-A work-in-progress mod for Daggerfall Unity that implements Morrowrind-like fast travel.
+A work-in-progress mod for Daggerfall Unity that implements Morrowind-like fast travel.
 
 Implemented features: 
 - Adds carriage drivers to city gates blocks
