@@ -19,6 +19,20 @@
                     "Description": "Adds a small fee to the travel cost, as payment to the carriage drivers.",
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Value": true,
+                    "Name": "DrawRoads",
+                    "Description": "Draw roads on the map (if the BasicRoads mod is installed and enabled).",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Value": true,
+                    "Name": "ClearerMapDots",
+                    "Description": "Draws larger dots for larger cities in the travel map.",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
                 }
             ],
             "$version": "v1"

@@ -73,7 +73,7 @@ namespace ImmersiveTravel{
                 DFRegion.LocationTypes locType = locationSummary.LocationType;
                 if(locType == DFRegion.LocationTypes.TownCity || locType == DFRegion.LocationTypes.TownVillage || locType == DFRegion.LocationTypes.TownHamlet){
                     ImmersiveTravelPopUp popUp = (ImmersiveTravelPopUp)UIWindowFactory.GetInstanceWithArgs(UIWindowType.TravelPopUp, new object[] { uiManager, uiManager.TopWindow, this });
-                    popUp.setEndPosPlease(pos);
+                    popUp.SetEndPosPlease(pos);
                     uiManager.PushWindow(popUp);
                 }
                 else{

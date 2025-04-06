@@ -47,8 +47,8 @@ namespace ImmersiveTravel{
             BasicRoadsEnabled = (BasicRoads != null) && BasicRoads.Enabled;
             if(BasicRoads != null)
                 Debug.Log("ImmerisveTravel: basic roads mod found");
-            if(mod.GetSettings().GetValue<bool>("General", "DisableFastTravel"))
-                UIWindowFactory.RegisterCustomUIWindow(UIWindowType.TravelMap, typeof(ImmersiveTravelMap));
+            //if(mod.GetSettings().GetValue<bool>("General", "DisableFastTravel"))
+            //    UIWindowFactory.RegisterCustomUIWindow(UIWindowType.TravelMap, typeof(ImmersiveTravelMap));
             UIWindowFactory.RegisterCustomUIWindow(UIWindowType.TravelPopUp, typeof(ImmersiveTravelPopUp));
             ModManager.Instance.GetMod(initParams.ModTitle).IsReady = true;
             Debug.Log("ImmersiveTravel: init finished");
@@ -56,8 +56,8 @@ namespace ImmersiveTravel{
 
         //when loading the mod, replaces the vanilla travel map with a disabled one (you can open it, but not travel)
         public void Awake(){
-            if(mod.GetSettings().GetValue<bool>("General", "DisableFastTravel"))
-                UIWindowFactory.RegisterCustomUIWindow(UIWindowType.TravelMap, typeof(ImmersiveTravelMap));
+            //if(mod.GetSettings().GetValue<bool>("General", "DisableFastTravel"))
+            //    UIWindowFactory.RegisterCustomUIWindow(UIWindowType.TravelMap, typeof(ImmersiveTravelMap));
         }
 
         //register a new faction to FACTIONS.TXT, used to check if an npc is a carriage driver
