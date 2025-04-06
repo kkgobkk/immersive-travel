@@ -60,30 +60,30 @@ namespace ImmersiveTravel{
         
         protected override void CreatePopUpWindow()
         {
-            DFPosition pos = MapsFile.GetPixelFromPixelID(locationSummary.ID);
-            if (teleportationTravel)    //the popup from the mage's guild teleportation service hasn't changed.
-            {
-                DaggerfallTeleportPopUp telePopup = (DaggerfallTeleportPopUp)UIWindowFactory.GetInstanceWithArgs(UIWindowType.TeleportPopUp, new object[] { uiManager, uiManager.TopWindow, this });
-                telePopup.DestinationPos = pos;
-                telePopup.DestinationName = GetLocationNameInCurrentRegion(locationSummary.MapIndex);
-                uiManager.PushWindow(telePopup);
-            }
-            else    //the one from manual travel has been changed to only enable travelling to cities, towns and hamlets
-            {
-                DFRegion.LocationTypes locType = locationSummary.LocationType;
-                if(locType == DFRegion.LocationTypes.TownCity || locType == DFRegion.LocationTypes.TownVillage || locType == DFRegion.LocationTypes.TownHamlet){
-                    ImmersiveTravelPopUp popUp = (ImmersiveTravelPopUp)UIWindowFactory.GetInstanceWithArgs(UIWindowType.TravelPopUp, new object[] { uiManager, uiManager.TopWindow, this });
-                    popUp.SetEndPosPlease(pos);
-                    uiManager.PushWindow(popUp);
+                DFPosition pos = MapsFile.GetPixelFromPixelID(locationSummary.ID);
+                if (teleportationTravel)    //the popup from the mage's guild teleportation service hasn't changed.
+                {
+                    DaggerfallTeleportPopUp telePopup = (DaggerfallTeleportPopUp)UIWindowFactory.GetInstanceWithArgs(UIWindowType.TeleportPopUp, new object[] { uiManager, uiManager.TopWindow, this });
+                    telePopup.DestinationPos = pos;
+                    telePopup.DestinationName = GetLocationNameInCurrentRegion(locationSummary.MapIndex);
+                    uiManager.PushWindow(telePopup);
                 }
-                else{
-                    DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, this);
-                    messageBox.SetText("Carriage drivers will only take you to towns.");
-                    Button okButton = messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.OK, true);
-                    messageBox.OnButtonClick += (_sender, button) =>{CloseWindow();};
-                    uiManager.PushWindow(messageBox);
+                else    //the one from manual travel has been changed to only enable travelling to cities, towns and hamlets
+                {
+                    DFRegion.LocationTypes locType = locationSummary.LocationType;
+                    if(locType == DFRegion.LocationTypes.TownCity || locType == DFRegion.LocationTypes.TownVillage || locType == DFRegion.LocationTypes.TownHamlet){
+                        ImmersiveTravelPopUp popUp = (ImmersiveTravelPopUp)UIWindowFactory.GetInstanceWithArgs(UIWindowType.TravelPopUp, new object[] { uiManager, uiManager.TopWindow, this });
+                        popUp.SetEndPosPlease(pos);
+                        uiManager.PushWindow(popUp);
+                    }
+                    else{
+                        DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, this);
+                        messageBox.SetText("Carriage drivers will only take you to towns.");
+                        Button okButton = messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.OK, true);
+                        messageBox.OnButtonClick += (_sender, button) =>{CloseWindow();};
+                        uiManager.PushWindow(messageBox);
+                    }
                 }
-            }
         }
 
         protected override void UpdateMapLocationDotsTexture()
