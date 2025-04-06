@@ -1,4 +1,4 @@
-//this is the main class of the mod. It registers all new factions and guild services (CarriageDriversGuild.cs)  and the overridden map (ImmersiveTravelMap.cs) to the game.
+﻿//this is the main class of the mod. It registers all new factions and guild services (CarriageDriversGuild.cs) 
 
 using System;
 using System.Collections.Generic;
@@ -41,23 +41,17 @@ namespace ImmersiveTravel{
         public static void Init(InitParams initParams){
             Debug.Log("init mod: ImmersiveTravel");
             mod = initParams.Mod;
+            //register travel popup, factions and service
+            UIWindowFactory.RegisterCustomUIWindow(UIWindowType.TravelPopUp, typeof(ImmersiveTravelPopUp));
             if(!(AddCarriageDriversFaction() && AddTravelService() && AddFakeGuild()))
                 throw new Exception("faction and service ID is already used.");
+            //basic roads integration
             Mod BasicRoads = ModManager.Instance.GetMod("BasicRoads");
             BasicRoadsEnabled = (BasicRoads != null) && BasicRoads.Enabled;
             if(BasicRoads != null)
                 Debug.Log("ImmerisveTravel: basic roads mod found");
-            //if(mod.GetSettings().GetValue<bool>("General", "DisableFastTravel"))
-            //    UIWindowFactory.RegisterCustomUIWindow(UIWindowType.TravelMap, typeof(ImmersiveTravelMap));
-            UIWindowFactory.RegisterCustomUIWindow(UIWindowType.TravelPopUp, typeof(ImmersiveTravelPopUp));
             ModManager.Instance.GetMod(initParams.ModTitle).IsReady = true;
             Debug.Log("ImmersiveTravel: init finished");
-        }
-
-        //when loading the mod, replaces the vanilla travel map with a disabled one (you can open it, but not travel)
-        public void Awake(){
-            //if(mod.GetSettings().GetValue<bool>("General", "DisableFastTravel"))
-            //    UIWindowFactory.RegisterCustomUIWindow(UIWindowType.TravelMap, typeof(ImmersiveTravelMap));
         }
 
         //register a new faction to FACTIONS.TXT, used to check if an npc is a carriage driver

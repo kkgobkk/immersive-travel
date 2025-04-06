@@ -1,4 +1,4 @@
-//Implements a modified version of the travel map that is opened when talking to carriages drivers
+﻿//Implements a modified version of the travel map that is opened when talking to carriages drivers
 
 using UnityEngine;
 using DaggerfallWorkshop.Game;
