@@ -11,7 +11,7 @@ Implemented features:
 - Beautiful Cities of Daggerfall compatibility (download the patch from BCOD nexus page)
 - Basic roads mod integration (the Immersive Travel map can now display the roads from BasicRoads)
 - Variable size location dots (similar to the Travel Options map)
+- Compatibility with TravelOptions
 
 To-do list:
-- Better compatibility with TravelOptions
 - Regional variants for carriage drivers (for instance desert regions could have camels instead of horses)
