@@ -21,5 +21,11 @@
         "Assets/Game/Mods/ImmersiveTravel/WorldData/WALLAA10.RMB.json",
         "Assets/Game/Mods/ImmersiveTravel/Scripts/CarriageMap.cs"
     ],
-    "Dependencies": []
+    "Dependencies": [
+        {
+            "Name": "traveloptions",
+            "IsOptional": true,
+            "IsPeer": false
+        }
+    ]
 }
