@@ -16,6 +16,7 @@ namespace ImmersiveTravel{
         public override void CalculateTripCost(int travelTimeInMinutes, bool sleepModeInn, bool hasShip, bool travelShip)
             {
                 int travelTimeInHours = (travelTimeInMinutes + 59) / 60;
+                int CarriageFee = ImmersiveTravel.mod.GetSettings().GetValue<int>("General", "DailyCarriageFee");
                 piecesCost = 0;
                 if (sleepModeInn && !GameManager.Instance.GuildManager.GetGuild(FactionFile.GuildGroups.KnightlyOrder).FreeTavernRooms())
                 {
@@ -24,9 +25,7 @@ namespace ImmersiveTravel{
                         piecesCost = 0;
                     piecesCost += 5;        // Always at least one stay at an inn
                 }
-                totalCost = piecesCost;
-                if(ImmersiveTravel.mod.GetSettings().GetValue<bool>("General", "AddCarriageFee"))
-                    totalCost = totalCost + ((travelTimeInHours - OceanPixels) / 24) + 1;  //adds a cost of 1g per day as payment to the carriage driver
+                totalCost = piecesCost + CarriageFee * ((travelTimeInHours - OceanPixels) / 24) + CarriageFee; 
                 if ((OceanPixels > 0) && !hasShip && travelShip)
                     totalCost += 25 * (OceanPixels / 24 + 1);
                 if (totalCost < 0)     // This check is absent from classic. Without it travel cost can become negative.

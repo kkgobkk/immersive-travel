@@ -26,6 +26,7 @@ namespace ImmersiveTravel{
         static public Mod mod;
         static private StaticNPC npc;
         static public bool BasicRoadsEnabled { get; private set; }
+        static public bool HiddenMapLocationsEnabled { get; private set; }
         
         //direction constants copied from BasicRoadsTexturing
         public const byte N = 128; //0b_1000_0000;
@@ -48,8 +49,8 @@ namespace ImmersiveTravel{
             //basic roads integration
             Mod BasicRoads = ModManager.Instance.GetMod("BasicRoads");
             BasicRoadsEnabled = (BasicRoads != null) && BasicRoads.Enabled;
-            if(BasicRoads != null)
-                Debug.Log("ImmerisveTravel: basic roads mod found");
+            Mod hiddenMapLocations = ModManager.Instance.GetMod("Hidden Map Locations");
+            HiddenMapLocationsEnabled = hiddenMapLocations != null && hiddenMapLocations.Enabled;
             ModManager.Instance.GetMod(initParams.ModTitle).IsReady = true;
             Debug.Log("ImmersiveTravel: init finished");
         }
@@ -68,7 +69,7 @@ namespace ImmersiveTravel{
                 face = -1,
                 race = -1,
                 sgroup = 1,
-                ggroup = 8,
+                ggroup = 16,
             });
         }
 
@@ -77,7 +78,7 @@ namespace ImmersiveTravel{
         }
 
         private static bool AddFakeGuild(){
-            return GuildManager.RegisterCustomGuild(FactionFile.GuildGroups.GGroup8, typeof(CarriageDriversGuild));
+            return GuildManager.RegisterCustomGuild(FactionFile.GuildGroups.GGroup16, typeof(CarriageDriversGuild));
         }
     }
 }

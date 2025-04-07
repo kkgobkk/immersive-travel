@@ -7,11 +7,13 @@
             "IsAdvanced": false,
             "Keys": [
                 {
-                    "Value": true,
-                    "Name": "AddCarriageFee",
-                    "Description": "Adds a small fee to the travel cost, as payment to the carriage drivers.",
+                    "Min": 0,
+                    "Max": 99,
+                    "Value": 1,
+                    "Name": "DailyCarriageFee",
+                    "Description": "The fee you must pay to travel with a carriage for every day of travel",
                     "$version": "v1",
-                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderIntKey"
                 },
                 {
                     "Value": true,

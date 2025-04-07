@@ -1,5 +1,7 @@
 ﻿//Implements a modified version of the travel map that is opened when talking to carriages drivers
 
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.UserInterface;
@@ -7,7 +9,6 @@ using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallConnect;
 using DaggerfallConnect.Utility;
 using DaggerfallConnect.Arena2;
-using System;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game.UserInterface;
@@ -21,7 +22,7 @@ using DaggerfallWorkshop;
 
 namespace ImmersiveTravel{
     public class CarriageMap : DaggerfallTravelMapWindow
-    {
+{
         const int path_roads = 0;
         const int path_tracks = 1;
         const int path_rivers = 2;
@@ -37,14 +38,22 @@ namespace ImmersiveTravel{
         protected int markedLocationId = -1;
         Color32 MarkLocationColor = new Color32(255, 235, 5, 255);
 
+        // Hidden Map Locations mod data structures.
+        protected HashSet<ContentReader.MapSummary> discoveredMapSummaries;
+        protected HashSet<DFRegion.LocationTypes> revealedLocationTypes;
+
         private static bool DrawRoads = ImmersiveTravel.BasicRoadsEnabled && ImmersiveTravel.mod.GetSettings().GetValue<bool>("General", "DrawRoads");
 
         public CarriageMap(IUserInterfaceManager uiManager) : base(uiManager){
             if (DrawRoads)
-            {
                 // Try to get path data from BasicRoads mod
                 ModManager.Instance.SendModMessage("BasicRoads", "getPathData", path_roads,
-                    (string message, object data) => { pathsData[path_roads] = (byte[])data; });
+                    (string message, object data) => { pathsData[path_roads] = (byte[])data; });     
+            if (ImmersiveTravel.HiddenMapLocationsEnabled){
+                discoveredMapSummaries = new HashSet<ContentReader.MapSummary>();
+                revealedLocationTypes = new HashSet<DFRegion.LocationTypes>();
+                ModManager.Instance.SendModMessage("Hidden Map Locations", "getRevealedLocationTypes", null, (string message, object data) 
+                => { revealedLocationTypes = (HashSet<DFRegion.LocationTypes>)data; });
             }
         }
 
@@ -88,14 +97,11 @@ namespace ImmersiveTravel{
 
         protected override void UpdateMapLocationDotsTexture()
         {
+            HMLDiscoveredLocations();
             if (DrawRoads && selectedRegion != 61)
-            {
                 UpdateMapLocationDotsTextureWithPaths();
-            }
             else
-            {
                 base.UpdateMapLocationDotsTexture();
-            }
         }
 
         protected override void ZoomMapTextures()
@@ -155,6 +161,7 @@ namespace ImmersiveTravel{
         public void DrawMapSection(int originX, int originY, int width, int height, ref Color32[] pixelBuffer, bool circular = false)
         {
             Array.Clear(pixelBuffer, 0, pixelBuffer.Length);
+            HMLDiscoveredLocations();
 
             for (int y = 0; y < height; y++)
             {
@@ -227,15 +234,7 @@ namespace ImmersiveTravel{
                     int offset5 = (int)((((height - y - 1) * 5 * width5) + (x * 5)) * scale);
 
                     int pIdx = originX + x + ((originY + y) * MapsFile.MaxMapPixelX);
-                    /*
-                    if (showPaths[path_streams])
-                        DrawPath(offset5, width5, pathsData[path_streams][pIdx], streamColor, ref locationDotsPixelBuffer);
-                    if (showPaths[path_tracks])
-                        DrawPath(offset5, width5, pathsData[path_tracks][pIdx], trackColor, ref locationDotsPixelBuffer);
-                    if (showPaths[path_rivers])
-                        DrawPath(offset5, width5, pathsData[path_rivers][pIdx], riverColor, ref locationDotsPixelBuffer);
-                    if (showPaths[path_roads])*/
-                        DrawPath(offset5, width5, pathsData[path_roads][pIdx], roadColor, ref locationDotsPixelBuffer);
+                    DrawPath(offset5, width5, pathsData[path_roads][pIdx], roadColor, ref locationDotsPixelBuffer);
 
                     ContentReader.MapSummary summary;
                     if (DaggerfallUnity.ContentReader.HasLocation(originX + x, originY + y, out summary))
@@ -268,6 +267,15 @@ namespace ImmersiveTravel{
                 for (int i = 0; i < outlineDisplacements.Length; i++)
                     regionLocationDotsOutlinesOverlayPanel[i].BackgroundTexture = locationDotsOutlineTexture;
             regionLocationDotsOverlayPanel.BackgroundTexture = locationDotsTexture;
+        }
+
+        protected override bool checkLocationDiscovered(ContentReader.MapSummary summary){
+            bool tmp;
+            if (ImmersiveTravel.HiddenMapLocationsEnabled)
+                tmp = discoveredMapSummaries.Contains(summary) || revealedLocationTypes.Contains(summary.LocationType);
+            else   
+                tmp = base.checkLocationDiscovered(summary);
+            return tmp;
         }
 
         public static void DrawPath(int offset, int width, byte pathDataPt, Color32 pathColor, ref Color32[] pixelBuffer)
@@ -318,39 +326,34 @@ namespace ImmersiveTravel{
             }
         }
 
-        void DrawLocation(int offset, int width, Color32 color, bool large, ref Color32[] pixelBuffer, bool highlight = false)
-        {
+        void DrawLocation(int offset, int width, Color32 color, bool large, ref Color32[] pixelBuffer, bool highlight = false){
             int st = large ? 0 : 1;
             int en = large ? 5 : 4;
-            for (int y = st; y < en; y++)
-            {
+            for (int y = st; y < en; y++){
                 for (int x = st; x < en; x++)
-                {
                     pixelBuffer[offset + (y * width) + x] = color;
-                }
             }
-            if (highlight)
-            {
-                for (int y = -2; y < 8; y = y + 8)
-                {
+            if (highlight){
+                for (int y = -2; y < 8; y = y + 8){
                     for (int x = -2; x < 7; x++)
-                    {
                         pixelBuffer[offset + (y * width) + x] = MarkLocationColor;
-                    }
                 }
-                for (int x = -2; x < 8; x = x + 8)
-                {
+                for (int x = -2; x < 8; x = x + 8){
                     for (int y = -2; y < 7; y++)
-                    {
                         pixelBuffer[offset + (y * width) + x] = MarkLocationColor;
-                    }
                 }
             }
         }
 
-        bool IsLocationLarge(DFRegion.LocationTypes locationType)
-        {
+        private bool IsLocationLarge(DFRegion.LocationTypes locationType){
             return locationType == DFRegion.LocationTypes.TownCity || locationType == DFRegion.LocationTypes.TownHamlet || !(ImmersiveTravel.mod.GetSettings().GetValue<bool>("General", "ClearerMapDots"));
+        }
+
+        protected void HMLDiscoveredLocations(){
+            if (ImmersiveTravel.HiddenMapLocationsEnabled){
+                ModManager.Instance.SendModMessage("Hidden Map Locations", "getDiscoveredMapSummaries", null,
+                    (string _, object result) => { discoveredMapSummaries = (HashSet<ContentReader.MapSummary>)result; });
+            }
         }
     }
 }
