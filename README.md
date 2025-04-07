@@ -7,11 +7,11 @@ Implemented features:
 - Carriage drivers can be talked to to initiate fast travel
 - You can no longer fast travel from anywhere
 - You can only fast travel to towns, but no longer to dungeons, temples or farms
-- Fast travel now cost 1 gold per day more as payment for the carriage driver
+- Fast travel now cost 1 gold per day more as payment for the carriage driver (can be increased or removed entirely from the mod's settings
 - Beautiful Cities of Daggerfall compatibility (download the patch from BCOD nexus page)
 - Basic roads mod integration (the Immersive Travel map can now display the roads from BasicRoads)
 - Variable size location dots (similar to the Travel Options map)
-- Compatibility with TravelOptions
+- Compatibility with other travel related mods such as TravelOptions and Hidden Map Locations
 
 To-do list:
 - Regional variants for carriage drivers (for instance desert regions could have camels instead of horses)
