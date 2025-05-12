@@ -84,8 +84,7 @@ namespace DaggerfallWorkshop.Game.Guilds{
             return true;
         }
 
-        override public void Join()
-        {
+        override public void Join(){
             base.Join();
         }
 

@@ -1,5 +1,4 @@
-﻿
-//overrides the travel popup window, changing the cost formula. See also: ImmersiveTravelCalculator.cs
+﻿//overrides the travel popup window, changing the cost formula. See also: ImmersiveTravelCalculator.cs
 
 using System;
 using UnityEngine;
@@ -38,24 +37,17 @@ namespace ImmersiveTravel
             CarriageMap carriageMap = TravelWindow as CarriageMap;
             if (carriageMap == null)
             {
-                Debug.Log("ImmersiveTravelPopUp OnPush, EndPos: " + EndPos.X + ", " + EndPos.Y);
-
                 // Try to retrieve the location summary for the destination.
                 ContentReader.MapSummary summary;
                 if (DaggerfallWorkshop.DaggerfallUnity.Instance.ContentReader.HasLocation(EndPos.X, EndPos.Y, out summary))
                 {
-                    Debug.Log("Retrieved location summary for EndPos " + EndPos + " with type: " + summary.LocationType.ToString());
-
-                    // Only show the message if the destination is a TownCity.
                     DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, this);
                     messageBox.OnButtonClick += (_sender, button) =>
                     {
                         CloseWindow();  // Close the popup when OK is clicked
                         CloseWindow();  // Close the popup when OK is clicked
                     };
-                    if (summary.LocationType == DFRegion.LocationTypes.TownCity ||
-                        summary.LocationType == DFRegion.LocationTypes.TownHamlet ||
-                        summary.LocationType == DFRegion.LocationTypes.TownVillage)
+                    if (CarriageMap.IsDestinationValid(summary.LocationType))
                     {
                         messageBox.SetText("You must talk to a carriage driver to travel there.");
                         Button okButton = messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.OK, true);
@@ -64,7 +56,7 @@ namespace ImmersiveTravel
                     }
                     else
                     {
-                        messageBox.SetText("You can only fast travel to towns.");
+                        messageBox.SetText("You cannot travel to this type of location.");
                         Button okButton = messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.OK, true);
                         // Push the message box so it displays immediately.
                         uiManager.PushWindow(messageBox);

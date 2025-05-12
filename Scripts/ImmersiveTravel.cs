@@ -24,7 +24,6 @@ namespace ImmersiveTravel{
     public class ImmersiveTravel : MonoBehaviour
     {
         static public Mod mod;
-        static private StaticNPC npc;
         static public bool BasicRoadsEnabled { get; private set; }
         static public bool HiddenMapLocationsEnabled { get; private set; }
         
@@ -40,24 +39,16 @@ namespace ImmersiveTravel{
 
         [Invoke(StateManager.StateTypes.Start, 0)]
         public static void Init(InitParams initParams){
-            Debug.Log("init mod: ImmersiveTravel");
+            Debug.Log("[ImmersiveTravel] initializing mod");
             mod = initParams.Mod;
-            //register travel popup, factions and service
-            UIWindowFactory.RegisterCustomUIWindow(UIWindowType.TravelPopUp, typeof(ImmersiveTravelPopUp));
-            if(!(AddCarriageDriversFaction() && AddTravelService() && AddFakeGuild()))
-                throw new Exception("faction and service ID is already used.");
-            //basic roads integration
-            Mod BasicRoads = ModManager.Instance.GetMod("BasicRoads");
-            BasicRoadsEnabled = (BasicRoads != null) && BasicRoads.Enabled;
-            Mod hiddenMapLocations = ModManager.Instance.GetMod("Hidden Map Locations");
-            HiddenMapLocationsEnabled = hiddenMapLocations != null && hiddenMapLocations.Enabled;
-            ModManager.Instance.GetMod(initParams.ModTitle).IsReady = true;
-            Debug.Log("ImmersiveTravel: init finished");
-        }
 
-        //register a new faction to FACTIONS.TXT, used to check if an npc is a carriage driver
-        private static bool AddCarriageDriversFaction(){
-            return FactionFile.RegisterCustomFaction(8642, new FactionFile.FactionData()
+            //register travel popup
+            if(mod.GetSettings().GetValue<bool>("General", "DisableVanillaTravel"))
+                UIWindowFactory.RegisterCustomUIWindow(UIWindowType.TravelPopUp, typeof(ImmersiveTravelPopUp));
+
+            //registr new factions
+            Debug.Log("[ImmersiveTravel] registering factions");
+            FactionFile.RegisterCustomFaction(8642, new FactionFile.FactionData()
             {
                 id = 8642,
                 parent = 0,
@@ -70,15 +61,43 @@ namespace ImmersiveTravel{
                 race = -1,
                 sgroup = 1,
                 ggroup = 16,
+            }); 
+            FactionFile.RegisterCustomFaction(8643, new FactionFile.FactionData()
+            {
+                id = 8643,
+                parent = 0,
+                type = 15,
+                name = "Seafarers League",
+                summon = -1,
+                region = -1,
+                power = 100,
+                face = -1,
+                race = -1,
+                sgroup = 1,
+                ggroup = 18,
             });
-        }
+           
+           //registr new guilds
+           Debug.Log("[ImmersiveTravel] registering guilds");
+            GuildManager.RegisterCustomGuild(FactionFile.GuildGroups.GGroup16, typeof(CarriageDriversGuild));
+            GuildManager.RegisterCustomGuild(FactionFile.GuildGroups.GGroup18, typeof(SeafarersLeague));
 
-        private static bool AddTravelService(){
-            return Services.RegisterGuildService(8642, CarriageDriversGuild.CarriageTravelService, "Carriage Travel");
-        }
+            //registr new services
+            Debug.Log("[ImmersiveTravel] registering services");
+            Services.RegisterGuildService(8642, CarriageDriversGuild.CarriageTravelService, "Carriage Travel");
+            Services.RegisterGuildService(8643, SeafarersLeague.ShipTravelService, "Ship Travel");
 
-        private static bool AddFakeGuild(){
-            return GuildManager.RegisterCustomGuild(FactionFile.GuildGroups.GGroup16, typeof(CarriageDriversGuild));
+            Debug.Log("[ImmersiveTravel] checking for other mods to integrate");
+            //basic roads integration
+            Mod BasicRoads = ModManager.Instance.GetMod("BasicRoads");
+            BasicRoadsEnabled = (BasicRoads != null) && BasicRoads.Enabled;
+
+            //HiddenMapLocations integration
+            Mod hiddenMapLocations = ModManager.Instance.GetMod("Hidden Map Locations");
+            HiddenMapLocationsEnabled = hiddenMapLocations != null && hiddenMapLocations.Enabled;
+
+            ModManager.Instance.GetMod(initParams.ModTitle).IsReady = true;
+            Debug.Log("[ImmersiveTravel] finished mod init");
         }
     }
 }

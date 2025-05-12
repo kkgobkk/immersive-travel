@@ -10,6 +10,7 @@ using DaggerfallConnect;
 using DaggerfallConnect.Utility;
 using DaggerfallConnect.Arena2;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
+using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
 using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game.UserInterface;
 using Wenzil.Console;
@@ -23,11 +24,11 @@ using DaggerfallWorkshop;
 namespace ImmersiveTravel{
     public class CarriageMap : DaggerfallTravelMapWindow
 {
-        const int path_roads = 0;
-        const int path_tracks = 1;
-        const int path_rivers = 2;
-        const int path_streams = 3;
-        internal static byte[][] pathsData = new byte[4][];
+        protected const int path_roads = 0;
+        protected const int path_tracks = 1;
+        protected const int path_rivers = 2;
+        protected const int path_streams = 3;
+        protected static byte[][] pathsData = new byte[4][];
         protected bool[] showPaths = { true, false, false, false };
 
         public static Color32 roadColor = new Color32(60, 60, 60, 255);
@@ -42,7 +43,8 @@ namespace ImmersiveTravel{
         protected HashSet<ContentReader.MapSummary> discoveredMapSummaries;
         protected HashSet<DFRegion.LocationTypes> revealedLocationTypes;
 
-        private static bool DrawRoads = ImmersiveTravel.BasicRoadsEnabled && ImmersiveTravel.mod.GetSettings().GetValue<bool>("General", "DrawRoads");
+        protected static bool DrawRoads = ImmersiveTravel.BasicRoadsEnabled && ImmersiveTravel.mod.GetSettings().GetValue<bool>("General", "DrawRoads");
+        protected static bool ClearerMapDots = ImmersiveTravel.mod.GetSettings().GetValue<bool>("General", "ClearerMapDots");
 
         public CarriageMap(IUserInterfaceManager uiManager) : base(uiManager){
             if (DrawRoads)
@@ -60,7 +62,6 @@ namespace ImmersiveTravel{
         protected override void Setup()
         {
             base.Setup();
-            
             if (DrawRoads){
                 locationDotsPixelBuffer = new Color32[(int)regionTextureOverlayPanelRect.width * (int)regionTextureOverlayPanelRect.height * 25];
                 locationDotsTexture = new Texture2D((int)regionTextureOverlayPanelRect.width * 5, (int)regionTextureOverlayPanelRect.height * 5, TextureFormat.ARGB32, false);
@@ -80,19 +81,34 @@ namespace ImmersiveTravel{
                 else    //the one from manual travel has been changed to only enable travelling to cities, towns and hamlets
                 {
                     DFRegion.LocationTypes locType = locationSummary.LocationType;
-                    if(locType == DFRegion.LocationTypes.TownCity || locType == DFRegion.LocationTypes.TownVillage || locType == DFRegion.LocationTypes.TownHamlet){
-                        ImmersiveTravelPopUp popUp = (ImmersiveTravelPopUp)UIWindowFactory.GetInstanceWithArgs(UIWindowType.TravelPopUp, new object[] { uiManager, uiManager.TopWindow, this });
+                    if(IsDestinationValid(locType)){
+                        ImmersiveTravelPopUp popUp = new ImmersiveTravelPopUp(uiManager, uiManager.TopWindow, this);
                         popUp.SetEndPosPlease(pos);
                         uiManager.PushWindow(popUp);
                     }
                     else{
                         DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, this);
-                        messageBox.SetText("Carriage drivers will only take you to towns.");
+                        messageBox.SetText("Carriage Drivers won't take you to whis type of location.");
                         Button okButton = messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.OK, true);
                         messageBox.OnButtonClick += (_sender, button) =>{CloseWindow();};
                         uiManager.PushWindow(messageBox);
                     }
                 }
+        }
+
+        public static bool IsDestinationValid(DFRegion.LocationTypes type){
+            ModSettings settings = ImmersiveTravel.mod.GetSettings();
+            return ((type == DFRegion.LocationTypes.Coven && settings.GetValue<bool>("AllowedDestinations", "Covens"))
+            ||((type == DFRegion.LocationTypes.DungeonKeep || type == DFRegion.LocationTypes.DungeonLabyrinth || type == DFRegion.LocationTypes.DungeonRuin) && settings.GetValue<bool>("AllowedDestinations", "Dungeons"))
+            ||(type == DFRegion.LocationTypes.Graveyard && settings.GetValue<bool>("AllowedDestinations", "Graveyards"))
+            ||(type == DFRegion.LocationTypes.HomeFarms && settings.GetValue<bool>("AllowedDestinations", "Farms"))
+            ||((type == DFRegion.LocationTypes.HomePoor || type == DFRegion.LocationTypes.HomeWealthy || type == DFRegion.LocationTypes.HomeYourShips) && settings.GetValue<bool>("AllowedDestinations", "Dungeons"))
+            ||((type == DFRegion.LocationTypes.ReligionCult || type == DFRegion.LocationTypes.ReligionTemple) && settings.GetValue<bool>("AllowedDestinations", "Temples"))
+            ||(type == DFRegion.LocationTypes.Tavern && settings.GetValue<bool>("AllowedDestinations", "Taverns"))
+            ||(type == DFRegion.LocationTypes.TownCity && settings.GetValue<bool>("AllowedDestinations", "Cities"))
+            ||(type == DFRegion.LocationTypes.TownHamlet && settings.GetValue<bool>("AllowedDestinations", "Hamlets"))
+            ||(type == DFRegion.LocationTypes.TownVillage && settings.GetValue<bool>("AllowedDestinations", "Villages"))
+            );
         }
 
         protected override void UpdateMapLocationDotsTexture()
@@ -158,7 +174,7 @@ namespace ImmersiveTravel{
             return new DFPosition(x, y);
         }
 
-        public void DrawMapSection(int originX, int originY, int width, int height, ref Color32[] pixelBuffer, bool circular = false)
+        public virtual void DrawMapSection(int originX, int originY, int width, int height, ref Color32[] pixelBuffer, bool circular = false)
         {
             Array.Clear(pixelBuffer, 0, pixelBuffer.Length);
             HMLDiscoveredLocations();
@@ -199,7 +215,7 @@ namespace ImmersiveTravel{
                             int index = GetPixelColorIndex(summary.LocationType);
                             if (index != -1)
                             {
-                                DrawLocation(offset5, width5, locationPixelColors[index], IsLocationLarge(summary.LocationType), ref pixelBuffer, summary.ID == markedLocationId);
+                                DrawLocation(offset5, width5, locationPixelColors[index], IsLocationLarge(summary), ref pixelBuffer, summary.ID == markedLocationId);
                             }
                         }
                     }
@@ -246,7 +262,7 @@ namespace ImmersiveTravel{
                             {
                                 if (DaggerfallUnity.Settings.TravelMapLocationsOutline)
                                     locationDotsOutlinePixelBuffer[offset] = dotOutlineColor;
-                                DrawLocation(offset5, width5, locationPixelColors[index], IsLocationLarge(summary.LocationType), ref locationDotsPixelBuffer, summary.ID == markedLocationId);
+                                DrawLocation(offset5, width5, locationPixelColors[index], IsLocationLarge(summary), ref locationDotsPixelBuffer, summary.ID == markedLocationId);
                             }
                         }
                     }
@@ -326,7 +342,7 @@ namespace ImmersiveTravel{
             }
         }
 
-        void DrawLocation(int offset, int width, Color32 color, bool large, ref Color32[] pixelBuffer, bool highlight = false){
+        protected void DrawLocation(int offset, int width, Color32 color, bool large, ref Color32[] pixelBuffer, bool highlight = false){
             int st = large ? 0 : 1;
             int en = large ? 5 : 4;
             for (int y = st; y < en; y++){
@@ -345,8 +361,8 @@ namespace ImmersiveTravel{
             }
         }
 
-        private bool IsLocationLarge(DFRegion.LocationTypes locationType){
-            return locationType == DFRegion.LocationTypes.TownCity || locationType == DFRegion.LocationTypes.TownHamlet || !(ImmersiveTravel.mod.GetSettings().GetValue<bool>("General", "ClearerMapDots"));
+        protected virtual bool IsLocationLarge(ContentReader.MapSummary summary){
+            return summary.LocationType == DFRegion.LocationTypes.TownCity || summary.LocationType == DFRegion.LocationTypes.TownHamlet || !ClearerMapDots;
         }
 
         protected void HMLDiscoveredLocations(){
