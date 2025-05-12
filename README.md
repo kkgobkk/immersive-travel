@@ -11,9 +11,16 @@
 - The maps used by carriage drivers and sailors can display the roads from Basic Roads (if it is installed and enabled)
 
 ## Compatibility
+- The mod is also available for the unofficial Android port of DFU
 - Beautiful Cities of Daggerfall compatibility (download the patch from BCOD nexus page)
 - Compatibility with major travel-related mods such as TravelOptions and Hidden Map Locations
 
 ## Coming soon
 - Regional variants for carriage drivers (for instance desert regions could have camels instead of horses)
 - Better ship travel
+
+## Disclaimer
+- This is my first mod (of any game), my first time using Unity, and my first time coding in C#, so feedback and bug reports are especially appreciated.
+
+## Source code
+https://github.com/kkgobkk/immersive-travel/
