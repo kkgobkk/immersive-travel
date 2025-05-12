@@ -1,6 +1,6 @@
 {
     "ModTitle": "ImmersiveTravel",
-    "ModVersion": "1.2",
+    "ModVersion": "1.3",
     "ModAuthor": "kkgobkk",
     "ContactInfo": "kkgobkk@hotmail.com",
     "DFUnity_Version": "1.1.0",
@@ -17,7 +17,36 @@
         "Assets/Game/Mods/ImmersiveTravel/Scripts/ImmersiveTravelPopUp.cs",
         "Assets/Game/Mods/ImmersiveTravel/Scripts/ImmersiveTravelCalculator.cs",
         "Assets/Game/Mods/ImmersiveTravel/Scripts/CarriageMap.cs",
-        "Assets/Game/Mods/ImmersiveTravel/ImmersiveTravel.dfmod.json"
+        "Assets/Game/Mods/ImmersiveTravel/ImmersiveTravel.dfmod.json",
+        "Assets/Game/Mods/ImmersiveTravel/Scripts/SeafarersLeague.cs",
+        "Assets/Game/Mods/ImmersiveTravel/Scripts/SeafarersPopUp.cs",
+        "Assets/Game/Mods/ImmersiveTravel/Scripts/SeafarersMap.cs"
     ],
-    "Dependencies": []
+    "Dependencies": [
+        {
+            "Name": "traveloptions",
+            "IsOptional": true,
+            "IsPeer": false
+        },
+        {
+            "Name": "basicroads",
+            "IsOptional": true,
+            "IsPeer": false
+        },
+        {
+            "Name": "hidden map locations",
+            "IsOptional": true,
+            "IsPeer": false
+        },
+        {
+            "Name": "world of daggerfall",
+            "IsOptional": true,
+            "IsPeer": false
+        },
+        {
+            "Name": "world of deaggerfall - terrain",
+            "IsOptional": true,
+            "IsPeer": false
+        }
+    ]
 }
