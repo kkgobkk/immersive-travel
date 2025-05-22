@@ -24,15 +24,22 @@
                 },
                 {
                     "Value": true,
+                    "Name": "ClearerMapDots",
+                    "Description": "Draws larger dots depending on town size in the travel map.",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Value": true,
                     "Name": "DrawRoads",
                     "Description": "Draw roads on the map (if the BasicRoads mod is installed and enabled).",
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
                 },
                 {
-                    "Value": true,
-                    "Name": "ClearerMapDots",
-                    "Description": "Draws larger dots depending on town size in the travel map.",
+                    "Value": false,
+                    "Name": "DrawTracks",
+                    "Description": "Draw dirt tracks on the map (if the BasicRoads mod is installed and enabled).",
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
                 }
@@ -44,6 +51,20 @@
             "Description": "General settings regarding ship travel (carriage travel and vanilla travel are unaffected)",
             "IsAdvanced": false,
             "Keys": [
+                {
+                    "Value": false,
+                    "Name": "DisableShipTravelOutsideDocks",
+                    "Description": "Prevents you from choosing ship transport mode during land travel",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Value": true,
+                    "Name": "LimitedRangeInSmallDocks",
+                    "Description": "Ships in smaller locations will only take you to ports in the same region. To travel to a different region you'll need to sail from a city",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
                 {
                     "Value": true,
                     "Name": "ShowLargerDocks",
@@ -133,6 +154,21 @@
                     "Value": true,
                     "Name": "Villages",
                     "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                }
+            ],
+            "$version": "v1"
+        },
+        {
+            "Name": "TravelOptionsCompatibility",
+            "Description": "Extra options to customise interactions between ImmersiveTravel and TravelOptions",
+            "IsAdvanced": false,
+            "Keys": [
+                {
+                    "Value": false,
+                    "Name": "AllowAcceleratedTravel",
+                    "Description": "Allows you to click on empty cells of the map to initiate player-controlled accelerated travel",
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
                 }
