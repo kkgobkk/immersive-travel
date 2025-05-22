@@ -23,7 +23,7 @@ namespace ImmersiveTravel{
             Debug.Log("ImmersiveTravelPopUp: Destination EndPos set to: " + pos);
         }
 
-        //the following few overrides ensure that ship travel is always selected
+        //enables ship travel and pushes an error message to the screen
         public void ForceShipTravel(){
             TravelShip = true;
             DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, this);
@@ -36,6 +36,8 @@ namespace ImmersiveTravel{
             // Push the message box so it displays immediately.
             uiManager.PushWindow(messageBox);
         }
+
+        //the following few overrides ensure that ship travel is always selected
 
         public override void OnPush(){
                 base.OnPush();

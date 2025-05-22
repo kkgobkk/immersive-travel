@@ -26,15 +26,10 @@ namespace ImmersiveTravel{
 {
         protected const int path_roads = 0;
         protected const int path_tracks = 1;
-        protected const int path_rivers = 2;
-        protected const int path_streams = 3;
-        protected static byte[][] pathsData = new byte[4][];
-        protected bool[] showPaths = { true, false, false, false };
+        protected static byte[][] pathsData = new byte[2][];
 
         public static Color32 roadColor = new Color32(60, 60, 60, 255);
         public static Color32 trackColor = new Color32(160, 118, 74, 255);
-        static Color32 riverColor = new Color32(48, 79, 250, 255);
-        static Color32 streamColor = new Color32(48, 120, 230, 255);
 
         protected int markedLocationId = -1;
         Color32 MarkLocationColor = new Color32(255, 235, 5, 255);
@@ -44,13 +39,16 @@ namespace ImmersiveTravel{
         protected HashSet<DFRegion.LocationTypes> revealedLocationTypes;
 
         protected static bool DrawRoads = ImmersiveTravel.BasicRoadsEnabled && ImmersiveTravel.mod.GetSettings().GetValue<bool>("General", "DrawRoads");
+        protected static bool DrawTracks = ImmersiveTravel.BasicRoadsEnabled && ImmersiveTravel.mod.GetSettings().GetValue<bool>("General", "DrawTracks");
         protected static bool ClearerMapDots = ImmersiveTravel.mod.GetSettings().GetValue<bool>("General", "ClearerMapDots");
 
         public CarriageMap(IUserInterfaceManager uiManager) : base(uiManager){
             if (DrawRoads)
                 // Try to get path data from BasicRoads mod
                 ModManager.Instance.SendModMessage("BasicRoads", "getPathData", path_roads,
-                    (string message, object data) => { pathsData[path_roads] = (byte[])data; });     
+                    (string message, object data) => { pathsData[path_roads] = (byte[])data; });
+                ModManager.Instance.SendModMessage("BasicRoads", "getPathData", path_tracks,
+                    (string message, object data) => { pathsData[path_tracks] = (byte[])data; });  
             if (ImmersiveTravel.HiddenMapLocationsEnabled){
                 discoveredMapSummaries = new HashSet<ContentReader.MapSummary>();
                 revealedLocationTypes = new HashSet<DFRegion.LocationTypes>();
@@ -62,7 +60,7 @@ namespace ImmersiveTravel{
         protected override void Setup()
         {
             base.Setup();
-            if (DrawRoads){
+            if (DrawRoads || DrawTracks){
                 locationDotsPixelBuffer = new Color32[(int)regionTextureOverlayPanelRect.width * (int)regionTextureOverlayPanelRect.height * 25];
                 locationDotsTexture = new Texture2D((int)regionTextureOverlayPanelRect.width * 5, (int)regionTextureOverlayPanelRect.height * 5, TextureFormat.ARGB32, false);
             }
@@ -99,22 +97,22 @@ namespace ImmersiveTravel{
         public static bool IsDestinationValid(DFRegion.LocationTypes type){
             ModSettings settings = ImmersiveTravel.mod.GetSettings();
             return ((type == DFRegion.LocationTypes.Coven && settings.GetValue<bool>("AllowedDestinations", "Covens"))
-            ||((type == DFRegion.LocationTypes.DungeonKeep || type == DFRegion.LocationTypes.DungeonLabyrinth || type == DFRegion.LocationTypes.DungeonRuin) && settings.GetValue<bool>("AllowedDestinations", "Dungeons"))
-            ||(type == DFRegion.LocationTypes.Graveyard && settings.GetValue<bool>("AllowedDestinations", "Graveyards"))
-            ||(type == DFRegion.LocationTypes.HomeFarms && settings.GetValue<bool>("AllowedDestinations", "Farms"))
-            ||((type == DFRegion.LocationTypes.HomePoor || type == DFRegion.LocationTypes.HomeWealthy || type == DFRegion.LocationTypes.HomeYourShips) && settings.GetValue<bool>("AllowedDestinations", "Dungeons"))
-            ||((type == DFRegion.LocationTypes.ReligionCult || type == DFRegion.LocationTypes.ReligionTemple) && settings.GetValue<bool>("AllowedDestinations", "Temples"))
-            ||(type == DFRegion.LocationTypes.Tavern && settings.GetValue<bool>("AllowedDestinations", "Taverns"))
-            ||(type == DFRegion.LocationTypes.TownCity && settings.GetValue<bool>("AllowedDestinations", "Cities"))
-            ||(type == DFRegion.LocationTypes.TownHamlet && settings.GetValue<bool>("AllowedDestinations", "Hamlets"))
-            ||(type == DFRegion.LocationTypes.TownVillage && settings.GetValue<bool>("AllowedDestinations", "Villages"))
+                ||((type == DFRegion.LocationTypes.DungeonKeep || type == DFRegion.LocationTypes.DungeonLabyrinth || type == DFRegion.LocationTypes.DungeonRuin) && settings.GetValue<bool>("AllowedDestinations", "Dungeons"))
+                ||(type == DFRegion.LocationTypes.Graveyard && settings.GetValue<bool>("AllowedDestinations", "Graveyards"))
+                ||(type == DFRegion.LocationTypes.HomeFarms && settings.GetValue<bool>("AllowedDestinations", "Farms"))
+                ||((type == DFRegion.LocationTypes.HomePoor || type == DFRegion.LocationTypes.HomeWealthy || type == DFRegion.LocationTypes.HomeYourShips) && settings.GetValue<bool>("AllowedDestinations", "Dungeons"))
+                ||((type == DFRegion.LocationTypes.ReligionCult || type == DFRegion.LocationTypes.ReligionTemple) && settings.GetValue<bool>("AllowedDestinations", "Temples"))
+                ||(type == DFRegion.LocationTypes.Tavern && settings.GetValue<bool>("AllowedDestinations", "Taverns"))
+                ||(type == DFRegion.LocationTypes.TownCity && settings.GetValue<bool>("AllowedDestinations", "Cities"))
+                ||(type == DFRegion.LocationTypes.TownHamlet && settings.GetValue<bool>("AllowedDestinations", "Hamlets"))
+                ||(type == DFRegion.LocationTypes.TownVillage && settings.GetValue<bool>("AllowedDestinations", "Villages"))
             );
         }
 
         protected override void UpdateMapLocationDotsTexture()
         {
             HMLDiscoveredLocations();
-            if (DrawRoads && selectedRegion != 61)
+            if ((DrawRoads || DrawTracks) && selectedRegion != 61)
                 UpdateMapLocationDotsTextureWithPaths();
             else
                 base.UpdateMapLocationDotsTexture();
@@ -124,7 +122,7 @@ namespace ImmersiveTravel{
         {
             base.ZoomMapTextures();
 
-            if (DrawRoads && RegionSelected && zoom)
+            if ((DrawRoads || DrawTracks) && RegionSelected && zoom)
             {
                 // Adjust cropped location dots overlay to x5 version
                 int width = (int)regionTextureOverlayPanelRect.width;
@@ -202,9 +200,9 @@ namespace ImmersiveTravel{
 
                     int pIdx = mpX + (mpY * MapsFile.MaxMapPixelX);
                     //Debug.LogFormat("Checking paths at x:{0} y:{1}  index:{2}", mpX, mpY, pIdx);
-                    if (showPaths[path_tracks])
+                    if (DrawTracks)
                         DrawPath(offset5, width5, pathsData[path_tracks][pIdx], trackColor, ref pixelBuffer);
-                    if (showPaths[path_roads])
+                    if (DrawRoads)
                         DrawPath(offset5, width5, pathsData[path_roads][pIdx], roadColor, ref pixelBuffer);
 
                     ContentReader.MapSummary summary;
@@ -250,7 +248,10 @@ namespace ImmersiveTravel{
                     int offset5 = (int)((((height - y - 1) * 5 * width5) + (x * 5)) * scale);
 
                     int pIdx = originX + x + ((originY + y) * MapsFile.MaxMapPixelX);
-                    DrawPath(offset5, width5, pathsData[path_roads][pIdx], roadColor, ref locationDotsPixelBuffer);
+                    if (DrawTracks)
+                        DrawPath(offset5, width5, pathsData[path_tracks][pIdx], trackColor, ref locationDotsPixelBuffer);
+                    if (DrawRoads)
+                        DrawPath(offset5, width5, pathsData[path_roads][pIdx], roadColor, ref locationDotsPixelBuffer);
 
                     ContentReader.MapSummary summary;
                     if (DaggerfallUnity.ContentReader.HasLocation(originX + x, originY + y, out summary))

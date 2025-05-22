@@ -26,6 +26,7 @@ namespace ImmersiveTravel{
     {
         protected static bool ShowLargerDocks = ImmersiveTravel.mod.GetSettings().GetValue<bool>("ShipTravel", "ShowLargerDocks");
         protected static bool ShowOnlyDocks = ImmersiveTravel.mod.GetSettings().GetValue<bool>("ShipTravel", "ShowOnlyDocks");
+        protected static bool ReducedRangeInVillages = false // ImmersiveTravel.mod.GetSettings().GetValue<bool>("ShipTravel", "LimitedRangeInSmallDocks");
 
         public SeafarersMap(IUserInterfaceManager uiManager) : base(uiManager){}
 
@@ -42,9 +43,22 @@ namespace ImmersiveTravel{
                 else    //the one from manual travel has been changed to only enable travelling to cities, towns and hamlets
                 {
                     if(HasDock(locationSummary.MapID)){
-                        SeafarersPopUp popUp = new SeafarersPopUp(uiManager, uiManager.TopWindow, this);;
-                        popUp.SetEndPosPlease(pos);
-                        uiManager.PushWindow(popUp);
+                        //if the ReducedRangeInVillages option is enabled and the current location isn't a city, only allow travel to locations in the same region
+                        PlayerGPS currentPlayerLoc = GameManager.Instance.PlayerGPS;
+                        if((!ReducedRangeInVillages) ||  currentPlayerLoc.CurrentLocationType == DFRegion.LocationTypes.TownCity || currentPlayerLoc.CurrentLocationType == DFRegion.LocationTypes.TownHamlet || locationSummary.RegionIndex == currentPlayerLoc.CurrentRegionIndex){
+                            SeafarersPopUp popUp = new SeafarersPopUp(uiManager, uiManager.TopWindow, this);;
+                            popUp.SetEndPosPlease(pos);
+                            uiManager.PushWindow(popUp);
+                        }
+                        else{
+                            Debug.Log("ImmersiveTravelTest: current loc type:" + currentPlayerLoc.CurrentLocationType);
+                            Debug.Log("ImmersiveTravelTest: current and targer region index: " + currentPlayerLoc.CurrentRegionIndex + ", " + locationSummary.RegionIndex);
+                            DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, this);
+                            messageBox.SetText("This boat will only take you to locations in the same region. Travel to a larger city to find a better equipped ship.");
+                            Button okButton = messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.OK, true);
+                            messageBox.OnButtonClick += (_sender, button) =>{CloseWindow();};
+                            uiManager.PushWindow(messageBox);
+                        }
                     }
                     else{
                         DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, this);
@@ -225,7 +239,7 @@ namespace ImmersiveTravel{
             214209,
             214210,
             214211,
-            214285,
+            213285, //Ripmore in Daggerfall (actual location of the docks is 214285)
             214294,
             214297,
             215821,
@@ -365,7 +379,7 @@ namespace ImmersiveTravel{
             341392,
             341496,
             341916,
-            342397,
+            343397, //Sentinel (actual location of the docks is 342397)
             342399,
             343439,
             344387,

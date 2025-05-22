@@ -16,6 +16,8 @@ namespace ImmersiveTravel
 {
     public class ImmersiveTravelPopUp : DaggerfallTravelPopUp
     {
+        protected static bool DisableShipTravel = ImmersiveTravel.BasicRoadsEnabled && ImmersiveTravel.mod.GetSettings().GetValue<bool>("ShipTravel", "DisableShipTravelOutsideDocks");
+
         public ImmersiveTravelPopUp(IUserInterfaceManager uiManager, IUserInterfaceWindow previousWindow = null, DaggerfallTravelMapWindow travelWindow = null)
             : base(uiManager, previousWindow, travelWindow)
         {
@@ -33,6 +35,9 @@ namespace ImmersiveTravel
         public override void OnPush()
         {
             base.OnPush();  // Call the base implementation
+
+            if(DisableShipTravel)
+                TravelShip = false;
 
             CarriageMap carriageMap = TravelWindow as CarriageMap;
             if (carriageMap == null)
@@ -69,5 +74,52 @@ namespace ImmersiveTravel
             }
         }
 
+        //disables ship travel and pushes an error to the screen
+        public void ForceNonShipTravel(){
+            TravelShip = false;
+            DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, this);
+            messageBox.SetText("Cannot enable ship travel without talking to a ship captain.");
+            Button okButton = messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.OK, true);
+            messageBox.OnButtonClick += (_sender, button) =>
+            {
+                CloseWindow();  // Close the popup when OK is clicked
+            };
+            // Push the message box so it displays immediately.
+            uiManager.PushWindow(messageBox);
+        }
+
+        //the following few methods are overridden to handle the "disable ship travel outside of docks" setting
+
+        public override void TransportModeButtonOnClickHandler(BaseScreenComponent sender, Vector2 position)
+        {
+            if ((!TravelShip) && DisableShipTravel){
+                ForceNonShipTravel();
+                return;
+            }
+            base.TransportModeButtonOnClickHandler(sender, position);
+        }
+
+        public override void ToggleTransportModeButtonOnScrollHandler(BaseScreenComponent sender)
+        {
+            if ((!TravelShip) && DisableShipTravel){
+                ForceNonShipTravel();
+                return;
+            }
+            base.ToggleTransportModeButtonOnScrollHandler(sender);
+        }
+
+        public override void SleepModeButtonOnClickHandler(BaseScreenComponent sender, Vector2 position)
+        {
+            if (sender == campOutToggleButton && DisableShipTravel)
+                    TravelShip = false;
+            base.SleepModeButtonOnClickHandler(sender, position);
+        }
+
+        public override void ToggleSleepModeButtonOnScrollHandler(BaseScreenComponent sender)
+        {
+            if (sender == campOutToggleButton && DisableShipTravel)
+                TravelShip = false;
+            base.ToggleSleepModeButtonOnScrollHandler(sender);
+        }
     }
 }
