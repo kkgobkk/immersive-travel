@@ -43,10 +43,9 @@ namespace ImmersiveTravel{
             mod = initParams.Mod;
 
             //register travel popup
-            if(mod.GetSettings().GetValue<bool>("General", "DisableVanillaTravel"))
-                UIWindowFactory.RegisterCustomUIWindow(UIWindowType.TravelPopUp, typeof(ImmersiveTravelPopUp));
+            UIWindowFactory.RegisterCustomUIWindow(UIWindowType.TravelPopUp, typeof(ImmersiveTravelPopUp));
 
-            //registr new factions
+            //register new factions
             Debug.Log("[ImmersiveTravel] registering factions");
             FactionFile.RegisterCustomFaction(8642, new FactionFile.FactionData()
             {

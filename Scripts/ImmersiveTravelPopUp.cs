@@ -4,6 +4,7 @@ using System;
 using UnityEngine;
 using DaggerfallWorkshop;
 using DaggerfallWorkshop.Game.UserInterface;
+using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallConnect.Utility;
 using DaggerfallConnect.Arena2;
@@ -16,7 +17,8 @@ namespace ImmersiveTravel
 {
     public class ImmersiveTravelPopUp : DaggerfallTravelPopUp
     {
-        protected static bool DisableShipTravel = ImmersiveTravel.BasicRoadsEnabled && ImmersiveTravel.mod.GetSettings().GetValue<bool>("ShipTravel", "DisableShipTravelOutsideDocks");
+        protected static bool DisableShipTravel = ImmersiveTravel.mod.GetSettings().GetValue<bool>("ShipTravel", "DisableShipTravelOutsideDocks");
+        protected static bool TravelOnlyFromNPCs = ImmersiveTravel.mod.GetSettings().GetValue<bool>("General", "DisableVanillaTravel");
 
         public ImmersiveTravelPopUp(IUserInterfaceManager uiManager, IUserInterfaceWindow previousWindow = null, DaggerfallTravelMapWindow travelWindow = null)
             : base(uiManager, previousWindow, travelWindow)
@@ -35,40 +37,37 @@ namespace ImmersiveTravel
         public override void OnPush()
         {
             base.OnPush();  // Call the base implementation
-
+            
             if(DisableShipTravel)
                 TravelShip = false;
 
             CarriageMap carriageMap = TravelWindow as CarriageMap;
-            if (carriageMap == null)
-            {
+            if (carriageMap == null && TravelOnlyFromNPCs){
                 // Try to retrieve the location summary for the destination.
                 ContentReader.MapSummary summary;
-                if (DaggerfallWorkshop.DaggerfallUnity.Instance.ContentReader.HasLocation(EndPos.X, EndPos.Y, out summary))
-                {
+                if (DaggerfallWorkshop.DaggerfallUnity.Instance.ContentReader.HasLocation(EndPos.X, EndPos.Y, out summary)){
                     DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, this);
-                    messageBox.OnButtonClick += (_sender, button) =>
-                    {
-                        CloseWindow();  // Close the popup when OK is clicked
-                        CloseWindow();  // Close the popup when OK is clicked
+                    messageBox.OnButtonClick += (_sender, button) =>{
+                    
+                        DaggerfallUI.Instance.PlayOneShot(DaggerfallWorkshop.SoundClips.ButtonClick);
+                        PopWindow();
+                        PopWindow();
+                        doFastTravel = false;
                     };
-                    if (CarriageMap.IsDestinationValid(summary.LocationType))
-                    {
+                    if (CarriageMap.IsDestinationValid(summary.LocationType)){
                         messageBox.SetText("You must talk to a carriage driver to travel there.");
                         Button okButton = messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.OK, true);
                         // Push the message box so it displays immediately.
                         uiManager.PushWindow(messageBox);
                     }
-                    else
-                    {
+                    else{
                         messageBox.SetText("You cannot travel to this type of location.");
                         Button okButton = messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.OK, true);
                         // Push the message box so it displays immediately.
                         uiManager.PushWindow(messageBox);
                     }
                 }
-                else
-                {
+                else{
                     Debug.Log("No location summary found for EndPos " + EndPos);
                 }
             }

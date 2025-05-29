@@ -43,7 +43,7 @@ namespace ImmersiveTravel{
         protected static bool ClearerMapDots = ImmersiveTravel.mod.GetSettings().GetValue<bool>("General", "ClearerMapDots");
 
         public CarriageMap(IUserInterfaceManager uiManager) : base(uiManager){
-            if (DrawRoads)
+            if (DrawRoads || DrawTracks)
                 // Try to get path data from BasicRoads mod
                 ModManager.Instance.SendModMessage("BasicRoads", "getPathData", path_roads,
                     (string message, object data) => { pathsData[path_roads] = (byte[])data; });
@@ -60,10 +60,8 @@ namespace ImmersiveTravel{
         protected override void Setup()
         {
             base.Setup();
-            if (DrawRoads || DrawTracks){
                 locationDotsPixelBuffer = new Color32[(int)regionTextureOverlayPanelRect.width * (int)regionTextureOverlayPanelRect.height * 25];
                 locationDotsTexture = new Texture2D((int)regionTextureOverlayPanelRect.width * 5, (int)regionTextureOverlayPanelRect.height * 5, TextureFormat.ARGB32, false);
-            }
         }
         
         protected override void CreatePopUpWindow()
@@ -112,7 +110,7 @@ namespace ImmersiveTravel{
         protected override void UpdateMapLocationDotsTexture()
         {
             HMLDiscoveredLocations();
-            if ((DrawRoads || DrawTracks) && selectedRegion != 61)
+            if (selectedRegion != 61)
                 UpdateMapLocationDotsTextureWithPaths();
             else
                 base.UpdateMapLocationDotsTexture();
@@ -122,7 +120,7 @@ namespace ImmersiveTravel{
         {
             base.ZoomMapTextures();
 
-            if ((DrawRoads || DrawTracks) && RegionSelected && zoom)
+            if (RegionSelected && zoom)
             {
                 // Adjust cropped location dots overlay to x5 version
                 int width = (int)regionTextureOverlayPanelRect.width;
