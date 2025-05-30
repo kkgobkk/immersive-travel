@@ -54,7 +54,7 @@ namespace ImmersiveTravel{
                         }
                         else{
                             DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, this);
-                            messageBox.SetText("Small boats will only take you to locations in the same region. Travel to a major city to find a larger ship.");
+                            messageBox.SetText("This small boat will only take you to locations in the same region. Travel to a major port to find a larger ship.");
                             Button okButton = messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.OK, true);
                             messageBox.OnButtonClick += (_sender, button) =>{CloseWindow();};
                             uiManager.PushWindow(messageBox);

@@ -1,4 +1,4 @@
-﻿//This class implements the "carriage drivers" guild, now renamed to "Iliac Bay Transport Company" in-game.
+﻿//This class implements the "carriage drivers" guild, now renamed to "Transport Guild" in-game.
 
 using System.Collections.Generic;
 using UnityEngine;
@@ -35,11 +35,12 @@ namespace DaggerfallWorkshop.Game.Guilds{
         public override TextFile.Token[] TokensWelcome(){
             TextFile.Token[] tmp = {
                 TextFile.CreateTextToken("Great! Whenever you're ready, just come to me"), newLine,
-                TextFile.CreateTextToken("and tell me where you need to go. I'll"), newLine,
-                TextFile.CreateTextToken("take care of the rest. Just remember that my"), newLine,
-                TextFile.CreateTextToken("fees only include the journey itself, if you"), newLine,
-                TextFile.CreateTextToken("want to rest at an inn or take a ferry across"), newLine,
-                TextFile.CreateTextToken("the Bay, you'll need to pay for it yourself."), newLine,
+                TextFile.CreateTextToken("and tell me where you need to go. I'll take care"), newLine,
+                TextFile.CreateTextToken("of the rest. Just know that extras like sleeping"), newLine,
+                TextFile.CreateTextToken("at an inn or taking a ferry aren't covered in the"), newLine,
+                TextFile.CreateTextToken("fee. Oh, and if you need to use the guild's services"), newLine,
+                TextFile.CreateTextToken("again, you'll find carriage drivers just outside"), newLine,
+                TextFile.CreateTextToken("the gates of most large towns."), newLine,
             };
             return tmp;
         }
@@ -47,15 +48,15 @@ namespace DaggerfallWorkshop.Game.Guilds{
         public override TextFile.Token[] TokensEligible(PlayerEntity playerEntity){
             TextFile.Token[] tmp = {
                 TextFile.CreateTextToken("Hello adventurer. Want to travel?"), newLine,
-                TextFile.CreateTextToken("I can take you anywhere in the Iliac Bay"), newLine,
-                TextFile.CreateTextToken("for a modest price. All you need to do is"), newLine,
-                TextFile.CreateTextToken("sign this contract and officially become"), newLine,
-                TextFile.CreateTextToken("an associate of the Transport Company."), newLine,
+                TextFile.CreateTextToken("The Travellers Guild can take you anywhere"), newLine,
+                TextFile.CreateTextToken("in the Iliac Bay for a modest price. "), newLine,
+                TextFile.CreateTextToken("All you need to do is sign this contract"), newLine,
+                TextFile.CreateTextToken("to officially become an associate."), newLine,
             };
             return tmp;
         }
 
-        //it's not like this text will ever be displayed, but since it's required, might as well write it
+        //it's not like this text will ever be displayed, but since it's required, might as well write it just in case
         public override TextFile.Token[] TokensPromotion(int newRank){
             TextFile.Token[] tmp = {
                 TextFile.CreateTextToken("Promotion? Lmao, you know this isn't a"), newLine,
@@ -66,9 +67,9 @@ namespace DaggerfallWorkshop.Game.Guilds{
 
         public override TextFile.Token[] TokensExpulsion(){
             TextFile.Token[] tmp = {
-                TextFile.CreateTextToken("It seems your contract with our Company has"), newLine,
-                TextFile.CreateTextToken("expired! You'll have to sign a new one if you"), newLine,
-                TextFile.CreateTextToken("want to keep using our services! You know, bureaucracy."), newLine,
+                TextFile.CreateTextToken("It seems your travelling permit for the Guild has"), newLine,
+                TextFile.CreateTextToken("expired! I can sign a new one for you if"), newLine,
+                TextFile.CreateTextToken("you need, all you need to do is ask!"), newLine,
             };
             return tmp;
         }

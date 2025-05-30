@@ -23,7 +23,7 @@ namespace DaggerfallWorkshop.Game.Guilds{
         public override List<DFCareer.Skills> TrainingSkills { get { return trainingSkills; } }
         protected static TextFile.Token newLine = TextFile.CreateFormatToken(TextFile.Formatting.JustifyCenter);
 
-        //it's not like this text will ever be displayed, but since it's required, might as well write it
+        //it's not like this text will ever be displayed, but since it's required, might as well write it just in case
         public override TextFile.Token[] TokensIneligible(PlayerEntity playerEntity){
             TextFile.Token[] tmp = {
                 TextFile.CreateTextToken("Hmm... I'm sorry, I don't think i want"), newLine,
@@ -34,9 +34,9 @@ namespace DaggerfallWorkshop.Game.Guilds{
         
         public override TextFile.Token[] TokensWelcome(){
             TextFile.Token[] tmp = {
-                TextFile.CreateTextToken("Excellent! talk to me whenever you're ready"), newLine,
+                TextFile.CreateTextToken("Excellent! Talk to me whenever you're ready"), newLine,
                 TextFile.CreateTextToken("to set sail! Also, remember that you'll find "), newLine,
-                TextFile.CreateTextToken("many other captains of the Seafarers League "), newLine,
+                TextFile.CreateTextToken("many other captains of the Seafarers Guild "), newLine,
                 TextFile.CreateTextToken("in every costal city of the Iliac Bay."), newLine,
             };
             return tmp;
@@ -45,7 +45,7 @@ namespace DaggerfallWorkshop.Game.Guilds{
         public override TextFile.Token[] TokensEligible(PlayerEntity playerEntity){
             TextFile.Token[] tmp = {
                 TextFile.CreateTextToken("If you need a ferry across the Bay, look no further!"), newLine,
-                TextFile.CreateTextToken("The Seafarers League will put their many"), newLine,
+                TextFile.CreateTextToken("The Seafarers Guild will put their many"), newLine,
                 TextFile.CreateTextToken("ships and sailors at your disposal for a"), newLine,
                 TextFile.CreateTextToken("small fee. Do you wish to use our services?"), newLine,
             };
@@ -63,9 +63,9 @@ namespace DaggerfallWorkshop.Game.Guilds{
 
         public override TextFile.Token[] TokensExpulsion(){
             TextFile.Token[] tmp = {
-                TextFile.CreateTextToken("It seems your travelling permit with the League has"), newLine,
-                TextFile.CreateTextToken("expired! I can sign a new one for you if"), newLine,
-                TextFile.CreateTextToken("you need, all you need to do is ask!"), newLine,
+                TextFile.CreateTextToken("It seems your contract with the Guild has"), newLine,
+                TextFile.CreateTextToken("expired! You'll have to sign a new one if you"), newLine,
+                TextFile.CreateTextToken("want to keep using our services! You know, bureaucracy."), newLine,
             };
             return tmp;
         }

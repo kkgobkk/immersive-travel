@@ -84,7 +84,7 @@ namespace ImmersiveTravel{
                     }
                     else{
                         DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, this);
-                        messageBox.SetText("Carriage Drivers won't take you to whis type of location.");
+                        messageBox.SetText("The Travellers Guild won't take you to this type of location.");
                         Button okButton = messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.OK, true);
                         messageBox.OnButtonClick += (_sender, button) =>{CloseWindow();};
                         uiManager.PushWindow(messageBox);
