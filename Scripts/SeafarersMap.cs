@@ -1,32 +1,24 @@
-﻿//Implements a modified version of the travel map that is opened when talking to carriages drivers
+﻿/* SeafarersMap.cs
+ * Modified version of the vanilla TravelMapWindow. Used
+ * only when travelling with ship captains.
+ */
 
 using System;
-using System.Collections.Generic;
-using UnityEngine;
+using DaggerfallWorkshop;
+using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallConnect;
 using DaggerfallConnect.Utility;
 using DaggerfallConnect.Arena2;
-using DaggerfallWorkshop.Game.Utility.ModSupport;
-using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
-using DaggerfallWorkshop.Utility;
-using DaggerfallWorkshop.Game.UserInterface;
-using Wenzil.Console;
-using Wenzil.Console.Commands;
-using DaggerfallWorkshop.Game.Utility;
-using DaggerfallWorkshop.Game.Serialization;
-using DaggerfallWorkshop.Utility.AssetInjection;
-using DaggerfallWorkshop.Game.Questing;
-using DaggerfallWorkshop;
 
 namespace ImmersiveTravel{
     public class SeafarersMap : CarriageMap
     {
-        protected static bool ShowLargerDocks = ImmersiveTravel.mod.GetSettings().GetValue<bool>("ShipTravel", "ShowLargerDocks");
-        protected static bool ShowOnlyDocks = ImmersiveTravel.mod.GetSettings().GetValue<bool>("ShipTravel", "ShowOnlyDocks");
-        protected static bool ReducedRangeInVillages = ImmersiveTravel.mod.GetSettings().GetValue<bool>("ShipTravel", "LimitedRangeInSmallDocks");
+        protected static bool showLargerDocks = ImmersiveTravel.Settings.GetValue<bool>("ShipTravel", "ShowLargerDocks");
+        protected static bool showOnlyDocks = ImmersiveTravel.Settings.GetValue<bool>("ShipTravel", "ShowOnlyDocks");
+        protected static bool reducedRangeInVillages = ImmersiveTravel.Settings.GetValue<bool>("ShipTravel", "LimitedRangeInSmallDocks");
 
         public SeafarersMap(IUserInterfaceManager uiManager) : base(uiManager){}
 
@@ -42,14 +34,15 @@ namespace ImmersiveTravel{
                 }
                 else
                 {
-                    if(NearDock(locationSummary.MapID)){
-                        //if the ReducedRangeInVillages option is enabled and the current location isn't a city, only allow travel to locations in the same region
+                    if (NearDock(locationSummary.MapID))
+                    {
+                        //if the reducedRangeInVillages option is enabled and the current location isn't a city, only allow travel to locations in the same region
                         PlayerGPS playerGPS = GameManager.Instance.PlayerGPS;
                         int borderingRegionIndex = BorderingRegionIndex(playerGPS.CurrentMapPixel.X, playerGPS.CurrentMapPixel.Y);
 
-                        if((!ReducedRangeInVillages) || IsPlayerInTown(playerGPS) || borderingRegionIndex == locationSummary.RegionIndex || borderingRegionIndex == -1){
+                        if((!reducedRangeInVillages) || IsPlayerInTown(playerGPS) || borderingRegionIndex == locationSummary.RegionIndex || borderingRegionIndex == -1){
                             SeafarersPopUp popUp = new SeafarersPopUp(uiManager, uiManager.TopWindow, this);
-                            popUp.SetEndPosPlease(pos);
+                            popUp.SetEndPosition(pos);
                             uiManager.PushWindow(popUp);
                         }
                         else{
@@ -60,7 +53,8 @@ namespace ImmersiveTravel{
                             uiManager.PushWindow(messageBox);
                         }
                     }
-                    else{
+                    else
+                    {
                         DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, this);
                         messageBox.SetText("That location doesn't have a suitable dock.");
                         Button okButton = messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.OK, true);
@@ -70,39 +64,45 @@ namespace ImmersiveTravel{
                 }
         }
 
-        protected override bool checkLocationDiscovered(ContentReader.MapSummary summary){
+        protected override bool checkLocationDiscovered(ContentReader.MapSummary summary)
+        {
             bool tmp;
             if (ImmersiveTravel.HiddenMapLocationsEnabled)
                 tmp = discoveredMapSummaries.Contains(summary) || revealedLocationTypes.Contains(summary.LocationType);
             else   
                 tmp = base.checkLocationDiscovered(summary);
-            if(ShowOnlyDocks)
+            if(showOnlyDocks)
                 tmp = tmp && NearDock(summary.ID);
             return tmp;
         }
 
-        protected override bool IsLocationLarge(ContentReader.MapSummary summary){
-            if(ShowLargerDocks)
+        protected override bool IsLocationLarge(ContentReader.MapSummary summary)
+        {
+            if(showLargerDocks)
                 return NearDock(summary.MapID);
             else
                 return base.IsLocationLarge(summary);
         }
         
-        private static bool HasDock(int mapID){
+        private static bool HasDock(int mapID)
+        {
             mapID = mapID & 0x000FFFFF;
             return Array.Exists(dockMapIDS, element => element == mapID);
         }
 
-        private static bool NearDock(int mapID){
+        private static bool NearDock(int mapID)
+        {
             mapID = mapID & 0x000FFFFF;
             return HasDock(mapID) || HasDock(mapID - 1000) || HasDock(mapID + 1) || HasDock(mapID + 1000) || HasDock(mapID -1);
         }
 
-        private static bool IsPlayerInTown(PlayerGPS gps){
+        private static bool IsPlayerInTown(PlayerGPS gps)
+        {
             return gps.CurrentLocationType == DFRegion.LocationTypes.TownCity || gps.CurrentLocationType == DFRegion.LocationTypes.TownHamlet || gps.CurrentRegionIndex == 31;
         }
 
-        private static int BorderingRegionIndex(int x, int y){
+        private static int BorderingRegionIndex(int x, int y)
+        {
             int borderingRegionIndex = DaggerfallUnity.Instance.ContentReader.MapFileReader.GetPoliticIndex(x, y+1) - 128;
             if(borderingRegionIndex == 31 || borderingRegionIndex <= 0){
                 borderingRegionIndex = DaggerfallUnity.Instance.ContentReader.MapFileReader.GetPoliticIndex(x, y+1) - 128;   //north
@@ -121,7 +121,9 @@ namespace ImmersiveTravel{
             return borderingRegionIndex;
         }
 
-        protected static int[] dockMapIDS = {
+        //please don't look past this point...
+        protected static int[] dockMapIDS = 
+        {
             5222,
             5224,
             5229,

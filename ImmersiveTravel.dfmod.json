@@ -7,21 +7,19 @@
     "ModDescription": "Implements diegetic fast-travel by adding carriages outside of city gates.",
     "GUID": "bcd05411-2d0c-4cf3-aa99-0df24c267aeb",
     "Files": [
+        "Assets/Game/Mods/ImmersiveTravel/Scripts/TravellersGuild.cs",
+        "Assets/Game/Mods/ImmersiveTravel/Scripts/ImmersiveTravel.cs",
+        "Assets/Game/Mods/ImmersiveTravel/Scripts/CarriageMap.cs",
+        "Assets/Game/Mods/ImmersiveTravel/Scripts/SeafarersMap.cs",
+        "Assets/Game/Mods/ImmersiveTravel/Scripts/ImmersiveTravelPopUp.cs",
+        "Assets/Game/Mods/ImmersiveTravel/Scripts/SeafarersCalculator.cs",
+        "Assets/Game/Mods/ImmersiveTravel/Scripts/ImmersiveTravelCalculator.cs",
+        "Assets/Game/Mods/ImmersiveTravel/Scripts/SeafarersPopUp.cs",
         "Assets/Game/Mods/ImmersiveTravel/modsettings.json",
-        "Assets/Game/Mods/ImmersiveTravel/WorldData/WALLAA11.RMB.json",
         "Assets/Game/Mods/ImmersiveTravel/WorldData/WALLAA10.RMB.json",
         "Assets/Game/Mods/ImmersiveTravel/WorldData/WALLAA09.RMB.json",
-        "Assets/Game/Mods/ImmersiveTravel/WorldData/WALLAA08.RMB.json",
-        "Assets/Game/Mods/ImmersiveTravel/Scripts/ImmersiveTravel.cs",
-        "Assets/Game/Mods/ImmersiveTravel/Scripts/CarriageDriversGuild.cs",
-        "Assets/Game/Mods/ImmersiveTravel/Scripts/ImmersiveTravelPopUp.cs",
-        "Assets/Game/Mods/ImmersiveTravel/Scripts/ImmersiveTravelCalculator.cs",
-        "Assets/Game/Mods/ImmersiveTravel/Scripts/CarriageMap.cs",
-        "Assets/Game/Mods/ImmersiveTravel/ImmersiveTravel.dfmod.json",
-        "Assets/Game/Mods/ImmersiveTravel/Scripts/SeafarersLeague.cs",
-        "Assets/Game/Mods/ImmersiveTravel/Scripts/SeafarersPopUp.cs",
-        "Assets/Game/Mods/ImmersiveTravel/Scripts/SeafarersMap.cs",
-        "Assets/Game/Mods/ImmersiveTravel/Scripts/SeafarersCalculator.cs"
+        "Assets/Game/Mods/ImmersiveTravel/WorldData/WALLAA11.RMB.json",
+        "Assets/Game/Mods/ImmersiveTravel/WorldData/WALLAA08.RMB.json"
     ],
     "Dependencies": [
         {

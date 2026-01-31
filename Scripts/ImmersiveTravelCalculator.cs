@@ -1,30 +1,23 @@
-﻿/*
-ImmersiveTravelCalculator.cs
+﻿/* ImmersiveTravelCalculator.cs
+ * This class overrides the vanilla TravelTimeCalculator class, used
+ * to compute travel times and travel costs. This modified version accounts
+ * for additional costs added by the mod, such as the payment for carriage driver
+ */
 
-This class overrides the vanilla TravelTimeCalculator class, used
-to compute travel times and travel costs. This modified version accounts
-for additional costs added by the mod, such as carriage guild fees and
-ship captain fees.
-*/
-
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using DaggerfallConnect.Utility;
 using DaggerfallConnect.Arena2;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Utility;
-using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
 
-namespace ImmersiveTravel{
+namespace ImmersiveTravel
+{
     public class ImmersiveTravelCalculator : TravelTimeCalculator
     {
         public override void CalculateTripCost(int travelTimeInMinutes, bool sleepModeInn, bool hasShip, bool travelShip)
             {
                 int travelTimeInHours = (travelTimeInMinutes + 59) / 60;
-                int carriageFee = ImmersiveTravel.mod.GetSettings().GetValue<int>("General", "DailyCarriageFee");
-                int shipFee = ImmersiveTravel.mod.GetSettings().GetValue<int>("ShipTravel", "DailyShipCost");
-                int captainFee = ImmersiveTravel.mod.GetSettings().GetValue<int>("ShipTravel", "DailyCaptainFee");
+                int carriageFee = ImmersiveTravel.Settings.GetValue<int>("General", "DailyCarriageFee");
+                int shipFee = ImmersiveTravel.Settings.GetValue<int>("ShipTravel", "DailyShipCost");
+                int captainFee = ImmersiveTravel.Settings.GetValue<int>("ShipTravel", "DailyCaptainFee");
                 piecesCost = 0; //the part of the total cost that must be paid in gold pieces (not letters of credit)
 
                 //compute total cost of sleeping at inns

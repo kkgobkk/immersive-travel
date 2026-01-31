@@ -1,25 +1,22 @@
-﻿//Implements a modified version of the travel map that is opened when talking to carriages drivers
+﻿/* CarriageMap.cs
+ * Modified version of the vanilla TravelMapWindow. Used
+ * only when travelling with carriage drivers. The code for
+ * drawing BasicRoads paths is taken (under MIT licence) from
+ * the mod TravelOptions by Hazelnut.
+ */
 
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using DaggerfallWorkshop.Game;
+using DaggerfallWorkshop;
+using DaggerfallWorkshop.Utility;
 using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
+using DaggerfallWorkshop.Game.Utility.ModSupport;
+using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
 using DaggerfallConnect;
 using DaggerfallConnect.Utility;
 using DaggerfallConnect.Arena2;
-using DaggerfallWorkshop.Game.Utility.ModSupport;
-using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
-using DaggerfallWorkshop.Utility;
-using DaggerfallWorkshop.Game.UserInterface;
-using Wenzil.Console;
-using Wenzil.Console.Commands;
-using DaggerfallWorkshop.Game.Utility;
-using DaggerfallWorkshop.Game.Serialization;
-using DaggerfallWorkshop.Utility.AssetInjection;
-using DaggerfallWorkshop.Game.Questing;
-using DaggerfallWorkshop;
 
 namespace ImmersiveTravel{
     public class CarriageMap : DaggerfallTravelMapWindow
@@ -38,18 +35,21 @@ namespace ImmersiveTravel{
         protected HashSet<ContentReader.MapSummary> discoveredMapSummaries;
         protected HashSet<DFRegion.LocationTypes> revealedLocationTypes;
 
-        protected static bool DrawRoads = ImmersiveTravel.BasicRoadsEnabled && ImmersiveTravel.mod.GetSettings().GetValue<bool>("General", "DrawRoads");
-        protected static bool DrawTracks = ImmersiveTravel.BasicRoadsEnabled && ImmersiveTravel.mod.GetSettings().GetValue<bool>("General", "DrawTracks");
-        protected static bool ClearerMapDots = ImmersiveTravel.mod.GetSettings().GetValue<bool>("General", "ClearerMapDots");
+        protected static bool drawRoads = ImmersiveTravel.BasicRoadsEnabled && ImmersiveTravel.Settings.GetValue<bool>("General", "DrawRoads");
+        protected static bool drawTracks = ImmersiveTravel.BasicRoadsEnabled && ImmersiveTravel.Settings.GetValue<bool>("General", "DrawTracks");
+        protected static bool clearerMapDots = ImmersiveTravel.Settings.GetValue<bool>("General", "ClearerMapDots");
 
-        public CarriageMap(IUserInterfaceManager uiManager) : base(uiManager){
-            if (DrawRoads || DrawTracks)
+        public CarriageMap(IUserInterfaceManager uiManager) : base(uiManager)
+        {
+            if (drawRoads || drawTracks)
                 // Try to get path data from BasicRoads mod
                 ModManager.Instance.SendModMessage("BasicRoads", "getPathData", path_roads,
                     (string message, object data) => { pathsData[path_roads] = (byte[])data; });
                 ModManager.Instance.SendModMessage("BasicRoads", "getPathData", path_tracks,
-                    (string message, object data) => { pathsData[path_tracks] = (byte[])data; });  
-            if (ImmersiveTravel.HiddenMapLocationsEnabled){
+                    (string message, object data) => { pathsData[path_tracks] = (byte[])data; }); 
+
+            if (ImmersiveTravel.HiddenMapLocationsEnabled)
+            {
                 discoveredMapSummaries = new HashSet<ContentReader.MapSummary>();
                 revealedLocationTypes = new HashSet<DFRegion.LocationTypes>();
                 ModManager.Instance.SendModMessage("Hidden Map Locations", "getRevealedLocationTypes", null, (string message, object data) 
@@ -79,7 +79,7 @@ namespace ImmersiveTravel{
                     DFRegion.LocationTypes locType = locationSummary.LocationType;
                     if(IsDestinationValid(locType)){
                         ImmersiveTravelPopUp popUp = new ImmersiveTravelPopUp(uiManager, uiManager.TopWindow, this);
-                        popUp.SetEndPosPlease(pos);
+                        popUp.SetEndPosition(pos);
                         uiManager.PushWindow(popUp);
                     }
                     else{
@@ -92,8 +92,10 @@ namespace ImmersiveTravel{
                 }
         }
 
-        public static bool IsDestinationValid(DFRegion.LocationTypes type){
-            ModSettings settings = ImmersiveTravel.mod.GetSettings();
+        //checks if the selected location is a valid destination according to the settings
+        public static bool IsDestinationValid(DFRegion.LocationTypes type)
+        {
+            ModSettings settings = ImmersiveTravel.Settings;
             return ((type == DFRegion.LocationTypes.Coven && settings.GetValue<bool>("AllowedDestinations", "Covens"))
                 ||((type == DFRegion.LocationTypes.DungeonKeep || type == DFRegion.LocationTypes.DungeonLabyrinth || type == DFRegion.LocationTypes.DungeonRuin) && settings.GetValue<bool>("AllowedDestinations", "Dungeons"))
                 ||(type == DFRegion.LocationTypes.Graveyard && settings.GetValue<bool>("AllowedDestinations", "Graveyards"))
@@ -198,9 +200,9 @@ namespace ImmersiveTravel{
 
                     int pIdx = mpX + (mpY * MapsFile.MaxMapPixelX);
                     //Debug.LogFormat("Checking paths at x:{0} y:{1}  index:{2}", mpX, mpY, pIdx);
-                    if (DrawTracks)
+                    if (drawTracks)
                         DrawPath(offset5, width5, pathsData[path_tracks][pIdx], trackColor, ref pixelBuffer);
-                    if (DrawRoads)
+                    if (drawRoads)
                         DrawPath(offset5, width5, pathsData[path_roads][pIdx], roadColor, ref pixelBuffer);
 
                     ContentReader.MapSummary summary;
@@ -246,9 +248,9 @@ namespace ImmersiveTravel{
                     int offset5 = (int)((((height - y - 1) * 5 * width5) + (x * 5)) * scale);
 
                     int pIdx = originX + x + ((originY + y) * MapsFile.MaxMapPixelX);
-                    if (DrawTracks)
+                    if (drawTracks)
                         DrawPath(offset5, width5, pathsData[path_tracks][pIdx], trackColor, ref locationDotsPixelBuffer);
-                    if (DrawRoads)
+                    if (drawRoads)
                         DrawPath(offset5, width5, pathsData[path_roads][pIdx], roadColor, ref locationDotsPixelBuffer);
 
                     ContentReader.MapSummary summary;
@@ -284,7 +286,8 @@ namespace ImmersiveTravel{
             regionLocationDotsOverlayPanel.BackgroundTexture = locationDotsTexture;
         }
 
-        protected override bool checkLocationDiscovered(ContentReader.MapSummary summary){
+        protected override bool checkLocationDiscovered(ContentReader.MapSummary summary)
+        {
             bool tmp;
             if (ImmersiveTravel.HiddenMapLocationsEnabled)
                 tmp = discoveredMapSummaries.Contains(summary) || revealedLocationTypes.Contains(summary.LocationType);
@@ -341,31 +344,39 @@ namespace ImmersiveTravel{
             }
         }
 
-        protected void DrawLocation(int offset, int width, Color32 color, bool large, ref Color32[] pixelBuffer, bool highlight = false){
+        protected void DrawLocation(int offset, int width, Color32 color, bool large, ref Color32[] pixelBuffer, bool highlight = false)
+        {
             int st = large ? 0 : 1;
             int en = large ? 5 : 4;
-            for (int y = st; y < en; y++){
+            for (int y = st; y < en; y++)
+            {
                 for (int x = st; x < en; x++)
                     pixelBuffer[offset + (y * width) + x] = color;
             }
-            if (highlight){
-                for (int y = -2; y < 8; y = y + 8){
+            if (highlight)
+            {
+                for (int y = -2; y < 8; y = y + 8)
+                {
                     for (int x = -2; x < 7; x++)
                         pixelBuffer[offset + (y * width) + x] = MarkLocationColor;
                 }
-                for (int x = -2; x < 8; x = x + 8){
+                for (int x = -2; x < 8; x = x + 8)
+                {
                     for (int y = -2; y < 7; y++)
                         pixelBuffer[offset + (y * width) + x] = MarkLocationColor;
                 }
             }
         }
 
-        protected virtual bool IsLocationLarge(ContentReader.MapSummary summary){
-            return summary.LocationType == DFRegion.LocationTypes.TownCity || summary.LocationType == DFRegion.LocationTypes.TownHamlet || !ClearerMapDots;
+        protected virtual bool IsLocationLarge(ContentReader.MapSummary summary
+        ){
+            return summary.LocationType == DFRegion.LocationTypes.TownCity || summary.LocationType == DFRegion.LocationTypes.TownHamlet || !clearerMapDots;
         }
 
-        protected void HMLDiscoveredLocations(){
-            if (ImmersiveTravel.HiddenMapLocationsEnabled){
+        protected void HMLDiscoveredLocations()
+        {
+            if (ImmersiveTravel.HiddenMapLocationsEnabled)
+            {
                 ModManager.Instance.SendModMessage("Hidden Map Locations", "getDiscoveredMapSummaries", null,
                     (string _, object result) => { discoveredMapSummaries = (HashSet<ContentReader.MapSummary>)result; });
             }
