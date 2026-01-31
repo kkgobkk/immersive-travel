@@ -1,5 +1,5 @@
 {
-    "Version": "1.2",
+    "Version": "1.5",
     "Sections": [
         {
             "Name": "General",
@@ -9,7 +9,7 @@
                 {
                     "Value": true,
                     "Name": "DisableVanillaTravel",
-                    "Description": "If this option is disabled, you will still be able to fast travel from anywhere.",
+                    "Description": "If this option is eabled, ...",
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
                 },
@@ -57,6 +57,24 @@
                     "Description": "Prevents you from choosing ship transport mode during land travel",
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Min": 0,
+                    "Max": 99,
+                    "Value": 15,
+                    "Name": "DailyShipCost",
+                    "Description": "Daily cost of renting a ship. Only applies if the player doesn't own their own ship",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderIntKey"
+                },
+                {
+                    "Min": 0,
+                    "Max": 99,
+                    "Value": 10,
+                    "Name": "DailyCaptainFee",
+                    "Description": "Daily cost of hiring a ship captain and his crew to man a ship. You will have to pay a captain even if you own the ship.",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.SliderIntKey"
                 },
                 {
                     "Value": true,
