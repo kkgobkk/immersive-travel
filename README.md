@@ -17,8 +17,6 @@
 
 ## Coming soon
 - Regional variants for carriage drivers (for instance desert regions could have camels instead of horses)
-- Better / more detailed ship travel
-- An option to prevent carriage drivers from taking you across the ocean
 
 ## Disclaimer
 - This is my first mod (of any game), my first time using Unity, and my first time coding in C#, so feedback and bug reports are especially appreciated.
