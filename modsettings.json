@@ -8,8 +8,8 @@
             "Keys": [
                 {
                     "Value": true,
-                    "Name": "DisableVanillaTravel",
-                    "Description": "If this option is eabled, ...",
+                    "Name": "DisableNormalTravel",
+                    "Description": "If this option is eabled, you will no longer be able to travel from the map and you will have to use ONLY carriages and ships.",
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
                 },
@@ -40,6 +40,13 @@
                     "Value": true,
                     "Name": "DrawTracks",
                     "Description": "Draw dirt tracks on the map (if the BasicRoads mod is installed and enabled).",
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
+                },
+                {
+                    "Value": false,
+                    "Name": "RegionLockedCarriages",
+                    "Description": "Prevent carriages from travelling to a different region. You must travel from the capital city to leave the region.",
                     "$version": "v1",
                     "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.ToggleKey"
                 }

@@ -3,6 +3,7 @@
  * only when travelling with ship captains.
  */
 
+using UnityEngine;
 using System;
 using DaggerfallWorkshop;
 using DaggerfallWorkshop.Utility;
@@ -20,7 +21,9 @@ namespace ImmersiveTravel{
         protected static bool showOnlyDocks = ImmersiveTravel.Settings.GetValue<bool>("ShipTravel", "ShowOnlyDocks");
         protected static bool reducedRangeInVillages = ImmersiveTravel.Settings.GetValue<bool>("ShipTravel", "LimitedRangeInSmallDocks");
 
-        public SeafarersMap(IUserInterfaceManager uiManager) : base(uiManager){}
+        public SeafarersMap(IUserInterfaceManager uiManager) : base(uiManager){
+            Debug.LogFormat("current player mapID: {0}", GameManager.Instance.PlayerGPS.CurrentMapID);
+        }
 
         protected override void CreatePopUpWindow()
         {
@@ -87,7 +90,7 @@ namespace ImmersiveTravel{
         private static bool HasDock(int mapID)
         {
             mapID = mapID & 0x000FFFFF;
-            return Array.Exists(dockMapIDS, element => element == mapID);
+            return Array.Exists(dockMapIDs, element => element == mapID);
         }
 
         private static bool NearDock(int mapID)
@@ -98,31 +101,32 @@ namespace ImmersiveTravel{
 
         private static bool IsPlayerInTown(PlayerGPS gps)
         {
-            return gps.CurrentLocationType == DFRegion.LocationTypes.TownCity || gps.CurrentLocationType == DFRegion.LocationTypes.TownHamlet || gps.CurrentRegionIndex == 31;
-        }
-
-        private static int BorderingRegionIndex(int x, int y)
-        {
-            int borderingRegionIndex = DaggerfallUnity.Instance.ContentReader.MapFileReader.GetPoliticIndex(x, y+1) - 128;
-            if(borderingRegionIndex == 31 || borderingRegionIndex <= 0){
-                borderingRegionIndex = DaggerfallUnity.Instance.ContentReader.MapFileReader.GetPoliticIndex(x, y+1) - 128;   //north
-                if(borderingRegionIndex == 31 || borderingRegionIndex <= 0){
-                    borderingRegionIndex = DaggerfallUnity.Instance.ContentReader.MapFileReader.GetPoliticIndex(x+1, y) - 128;   //east
-                    if(borderingRegionIndex == 31 || borderingRegionIndex <= 0){
-                        borderingRegionIndex = DaggerfallUnity.Instance.ContentReader.MapFileReader.GetPoliticIndex(x, y-1) - 128;   //south
-                        if(borderingRegionIndex == 31 || borderingRegionIndex <= 0){
-                            borderingRegionIndex = DaggerfallUnity.Instance.ContentReader.MapFileReader.GetPoliticIndex(x-1, y) - 128;   //west
-                            if(borderingRegionIndex == 31 || borderingRegionIndex <= 0)
-                                borderingRegionIndex = -1;
-                        }
-                    }
-                }
-            }
-            return borderingRegionIndex;
+            return gps.CurrentLocationType == DFRegion.LocationTypes.TownCity || gps.CurrentLocationType == DFRegion.LocationTypes.TownHamlet 
+            || Array.Exists(hardcodedLargeDocksIDs, element => (element & 0x000FFFFF) == (gps.CurrentMapID & 0x000FFFFF))    //these hardcoded large ports ensure you can always get out of island regions and that Port of Daggerfall is considered large
+            || gps.CurrentRegionIndex == 31;    //this means the dock is in a sea map cell, which only happens in large towns
         }
 
         //please don't look past this point...
-        protected static int[] dockMapIDS = 
+        protected static int[] hardcodedLargeDocksIDs =
+        {
+            1306739903, //Port of Daggerfall
+            1303690, //Kirkbeth Hamlet in Betony
+            20115597, //Singbrugh in Balfiera
+            5405511, //Warwych in Balfiera
+            16955879, //Ruins of Mastersley Grange in Balfiera
+            11700980, //Gallomarket in Balfiera
+            150625, //Old Lysausa's farm in Balfiera
+            24312929, //Old Yeomhart's Graveyard in Balfiera
+            263832, //Crimson Cat Inn in Satakalaam
+            343439, //Ruins of Cosh Hall in Cybiades
+            192035017, //Ipsmoth in Bhoriane
+            198333451, //Old Vannabyth's farm in Bhoriane
+            124928606, //Citadel of Heartham in Tulune
+            276583, //Inner Altar of Dibella in Tigonus
+            6570357, //Zagoparia in Mournoth
+        };
+
+        protected static int[] dockMapIDs = 
         {
             5222,
             5224,

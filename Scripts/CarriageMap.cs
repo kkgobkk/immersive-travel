@@ -9,11 +9,12 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using DaggerfallWorkshop;
-using DaggerfallWorkshop.Utility;
+using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
 using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
+using DaggerfallWorkshop.Utility;
 using DaggerfallConnect;
 using DaggerfallConnect.Utility;
 using DaggerfallConnect.Arena2;
@@ -21,6 +22,8 @@ using DaggerfallConnect.Arena2;
 namespace ImmersiveTravel{
     public class CarriageMap : DaggerfallTravelMapWindow
 {
+        public bool CreatedByNPC;
+
         protected const int path_roads = 0;
         protected const int path_tracks = 1;
         protected static byte[][] pathsData = new byte[2][];
@@ -38,6 +41,27 @@ namespace ImmersiveTravel{
         protected static bool drawRoads = ImmersiveTravel.BasicRoadsEnabled && ImmersiveTravel.Settings.GetValue<bool>("General", "DrawRoads");
         protected static bool drawTracks = ImmersiveTravel.BasicRoadsEnabled && ImmersiveTravel.Settings.GetValue<bool>("General", "DrawTracks");
         protected static bool clearerMapDots = ImmersiveTravel.Settings.GetValue<bool>("General", "ClearerMapDots");
+        protected static bool regionLockedCarriages = ImmersiveTravel.Settings.GetValue<bool>("General", "RegionLockedCarriages");
+
+        public CarriageMap(IUserInterfaceManager uiManager, bool createdByNPC) : base(uiManager)
+        {
+            if (drawRoads || drawTracks)
+                // Try to get path data from BasicRoads mod
+                ModManager.Instance.SendModMessage("BasicRoads", "getPathData", path_roads,
+                    (string message, object data) => { pathsData[path_roads] = (byte[])data; });
+                ModManager.Instance.SendModMessage("BasicRoads", "getPathData", path_tracks,
+                    (string message, object data) => { pathsData[path_tracks] = (byte[])data; }); 
+
+            if (ImmersiveTravel.HiddenMapLocationsEnabled)
+            {
+                discoveredMapSummaries = new HashSet<ContentReader.MapSummary>();
+                revealedLocationTypes = new HashSet<DFRegion.LocationTypes>();
+                ModManager.Instance.SendModMessage("Hidden Map Locations", "getRevealedLocationTypes", null, (string message, object data) 
+                => { revealedLocationTypes = (HashSet<DFRegion.LocationTypes>)data; });
+            }
+
+            this.CreatedByNPC = createdByNPC;
+        }
 
         public CarriageMap(IUserInterfaceManager uiManager) : base(uiManager)
         {
@@ -55,6 +79,8 @@ namespace ImmersiveTravel{
                 ModManager.Instance.SendModMessage("Hidden Map Locations", "getRevealedLocationTypes", null, (string message, object data) 
                 => { revealedLocationTypes = (HashSet<DFRegion.LocationTypes>)data; });
             }
+
+            this.CreatedByNPC = false;
         }
 
         protected override void Setup()
@@ -66,6 +92,13 @@ namespace ImmersiveTravel{
         
         protected override void CreatePopUpWindow()
         {
+                if (!CreatedByNPC)
+                {
+                    popUp = null;
+                    base.CreatePopUpWindow();
+                    return;
+                }
+
                 DFPosition pos = MapsFile.GetPixelFromPixelID(locationSummary.ID);
                 if (teleportationTravel)    //the popup from the mage's guild teleportation service hasn't changed.
                 {
@@ -74,15 +107,34 @@ namespace ImmersiveTravel{
                     telePopup.DestinationName = GetLocationNameInCurrentRegion(locationSummary.MapIndex);
                     uiManager.PushWindow(telePopup);
                 }
-                else    //the one from manual travel has been changed to only enable travelling to cities, towns and hamlets
+                else    //the one from regular travel has been changed to only enable travelling to cities, towns and hamlets
                 {
                     DFRegion.LocationTypes locType = locationSummary.LocationType;
-                    if(IsDestinationValid(locType)){
-                        ImmersiveTravelPopUp popUp = new ImmersiveTravelPopUp(uiManager, uiManager.TopWindow, this);
-                        popUp.SetEndPosition(pos);
-                        uiManager.PushWindow(popUp);
+                    PlayerGPS playerGPS = GameManager.Instance.PlayerGPS;
+                    int borderingRegionIndex = BorderingRegionIndex(playerGPS.CurrentMapPixel.X, playerGPS.CurrentMapPixel.Y);
+
+                    if (IsDestinationValid(locType))
+                    {
+                        if (regionLockedCarriages && !(isCapital(playerGPS.CurrentMapID) && isCapital(locationSummary.MapID)) && borderingRegionIndex != locationSummary.RegionIndex)
+                        {
+                            DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, this);
+                            if (isCapital(playerGPS.CurrentMapID))
+                                messageBox.SetText("To reach that location, you must travel to the capital of that region and take a carriage from there.");
+                            else
+                                messageBox.SetText("This carriage can't travel outside the region. Find a carriage in the capital or travel by sea.");
+                            Button okButton = messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.OK, true);
+                            messageBox.OnButtonClick += (_sender, button) =>{CloseWindow();};
+                            uiManager.PushWindow(messageBox);
+                        }
+                        else
+                        {
+                            ImmersiveTravelPopUp popUp = new ImmersiveTravelPopUp(uiManager, uiManager.TopWindow, this);
+                            popUp.SetEndPosition(pos);
+                            uiManager.PushWindow(popUp);
+                        }
                     }
-                    else{
+                    else
+                    {
                         DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, this);
                         messageBox.SetText("The Travellers Guild won't take you to this type of location.");
                         Button okButton = messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.OK, true);
@@ -199,7 +251,6 @@ namespace ImmersiveTravel{
                     int offset5 = ((height - y - 1) * 5 * width5) + (x * 5);
 
                     int pIdx = mpX + (mpY * MapsFile.MaxMapPixelX);
-                    //Debug.LogFormat("Checking paths at x:{0} y:{1}  index:{2}", mpX, mpY, pIdx);
                     if (drawTracks)
                         DrawPath(offset5, width5, pathsData[path_tracks][pIdx], trackColor, ref pixelBuffer);
                     if (drawRoads)
@@ -368,6 +419,27 @@ namespace ImmersiveTravel{
             }
         }
 
+        protected static int BorderingRegionIndex(int x, int y)
+        {
+            int borderingRegionIndex = DaggerfallUnity.Instance.ContentReader.MapFileReader.GetPoliticIndex(x, y+1) - 128;
+            if(borderingRegionIndex == 31 || borderingRegionIndex <= 0){
+                borderingRegionIndex = DaggerfallUnity.Instance.ContentReader.MapFileReader.GetPoliticIndex(x, y+1) - 128;   //north
+                if(borderingRegionIndex == 31 || borderingRegionIndex <= 0){
+                    borderingRegionIndex = DaggerfallUnity.Instance.ContentReader.MapFileReader.GetPoliticIndex(x+1, y) - 128;   //east
+                    if(borderingRegionIndex == 31 || borderingRegionIndex <= 0){
+                        borderingRegionIndex = DaggerfallUnity.Instance.ContentReader.MapFileReader.GetPoliticIndex(x, y-1) - 128;   //south
+                        if(borderingRegionIndex == 31 || borderingRegionIndex <= 0){
+                            borderingRegionIndex = DaggerfallUnity.Instance.ContentReader.MapFileReader.GetPoliticIndex(x-1, y) - 128;   //west
+                            if(borderingRegionIndex == 31 || borderingRegionIndex <= 0)
+                                borderingRegionIndex = -1;
+                        }
+                    }
+                }
+            }
+            return borderingRegionIndex;
+        }
+
+
         protected virtual bool IsLocationLarge(ContentReader.MapSummary summary
         ){
             return summary.LocationType == DFRegion.LocationTypes.TownCity || summary.LocationType == DFRegion.LocationTypes.TownHamlet || !clearerMapDots;
@@ -381,5 +453,56 @@ namespace ImmersiveTravel{
                     (string _, object result) => { discoveredMapSummaries = (HashSet<ContentReader.MapSummary>)result; });
             }
         }
+
+        protected bool isCapital(int mapID)
+        {
+            mapID = mapID & 0x000FFFFF;
+            return Array.Exists(capitalMapIDs, element => (element & 0x000FFFFF) == mapID);
+        }
+
+        //Balfiera, Betony, Cybiades, Dakfron, don't have a capital
+        private static int[] capitalMapIDs =
+        {
+            82263135, //Abibon-Gora
+            59881539, //Alcaire
+            173458441, //Alik'Ra
+            629313957, //Anticlere
+            41340935, //Antiphillos
+            134620179, //Ayasofya
+            43464047, //Bergama
+            120704813, //Bhoriane
+            105975582, //Daenya
+            213207, //Daggerfall
+            894921184, //Dragontail
+            547443168, //Dwynnen
+            215427971, //Ephesus
+            25383790, //Gavaudon
+            189901423, //Glenpoint
+            98649281, //Glenumbra
+            360796362, //Ilessian Hills City
+            102171092, //Kairou
+            73456957,   //Kambria
+            71386836, //Koegria
+            32843560, //Kozanset
+            108293065, //Lainlyn
+            119725471, //Menevia
+            211088757, //Mournoth
+            60187123, //Myrkwasa
+            264290371, //Northmoor
+            19021260, //Orsinium
+            175147641, //Phrygias
+            6699705, //Pothago
+            27700629, //Santaki
+            94674679, //Satakalaam
+            6634853, //Sentinel
+            168981041, //Shalgora
+            56939654, //Tigonius
+            664113476, //Totambu
+            61989057, //Tulune
+            275904937, //Urvaius
+            630439035, //Wayrest
+            311449835, //wrothgaria
+            374370979 //Ykalon
+        };
     }
 }

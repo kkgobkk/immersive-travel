@@ -19,7 +19,8 @@
         "Assets/Game/Mods/ImmersiveTravel/WorldData/WALLAA10.RMB.json",
         "Assets/Game/Mods/ImmersiveTravel/WorldData/WALLAA09.RMB.json",
         "Assets/Game/Mods/ImmersiveTravel/WorldData/WALLAA11.RMB.json",
-        "Assets/Game/Mods/ImmersiveTravel/WorldData/WALLAA08.RMB.json"
+        "Assets/Game/Mods/ImmersiveTravel/WorldData/WALLAA08.RMB.json",
+        "Assets/Game/Mods/ImmersiveTravel/ImmersiveTravel.dfmod.json"
     ],
     "Dependencies": [
         {

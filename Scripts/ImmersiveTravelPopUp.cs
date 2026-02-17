@@ -20,7 +20,7 @@ namespace ImmersiveTravel
     public class ImmersiveTravelPopUp : DaggerfallTravelPopUp
     {
         protected static bool disableShipTravel = ImmersiveTravel.Settings.GetValue<bool>("ShipTravel", "DisableShipTravelOutsideDocks");
-        protected static bool travelOnlyFromNPCs = ImmersiveTravel.Settings.GetValue<bool>("General", "DisableVanillaTravel");
+        protected static bool travelOnlyFromNPCs = ImmersiveTravel.Settings.GetValue<bool>("General", "DisableNormalTravel");
 
         public ImmersiveTravelPopUp(IUserInterfaceManager uiManager, IUserInterfaceWindow previousWindow = null, DaggerfallTravelMapWindow travelWindow = null)
             : base(uiManager, previousWindow, travelWindow)
@@ -44,7 +44,7 @@ namespace ImmersiveTravel
                 TravelShip = false;
 
             CarriageMap carriageMap = TravelWindow as CarriageMap;
-            if (carriageMap == null && travelOnlyFromNPCs)
+            if ((carriageMap == null || !carriageMap.CreatedByNPC) && travelOnlyFromNPCs)
             {
                 // Try to retrieve the location summary for the destination.
                 ContentReader.MapSummary summary;

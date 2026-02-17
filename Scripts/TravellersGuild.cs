@@ -47,7 +47,7 @@ namespace DaggerfallWorkshop.Game.Guilds
         //custom guild service for the carriage drivers
         public static void CarriageTravelService(IUserInterfaceWindow window)
         {
-            CarriageMap carriageTravelMap = new CarriageMap(DaggerfallUI.UIManager);
+            CarriageMap carriageTravelMap = new CarriageMap(DaggerfallUI.UIManager, true);
             DaggerfallUI.UIManager.PushWindow(carriageTravelMap);
         }
 

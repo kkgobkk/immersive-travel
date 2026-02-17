@@ -21,6 +21,7 @@ namespace ImmersiveTravel
         static public ModSettings Settings;
         static public bool BasicRoadsEnabled { get; private set; }
         static public bool HiddenMapLocationsEnabled { get; private set; }
+        static public bool TravelOptionsEnabled { get; private set; }
         
         /*direction constants from BasicRoadsTexturing (needed to
         draw BasicRoads roads and tracks on the travel map windows)*/
@@ -40,8 +41,39 @@ namespace ImmersiveTravel
             mod = initParams.Mod;
             Settings = mod.GetSettings();
 
+            //check for mods to integrate
+            Debug.Log("[ImmersiveTravel] checking for other mods to integrate");
+            Mod basicRoads = ModManager.Instance.GetMod("BasicRoads");
+            BasicRoadsEnabled = basicRoads != null && basicRoads.Enabled;
+            if (BasicRoadsEnabled)
+            {
+                Debug.Log("[ImmersiveTravel] BasicRoads mod detected");
+            }
+
+            Mod travelOptions = ModManager.Instance.GetMod("TravelOptions");
+            TravelOptionsEnabled = travelOptions != null && travelOptions.Enabled;
+            if (TravelOptionsEnabled)
+            {
+                Debug.Log("[ImmersiveTravel] TravelOptions mod detected");
+            }
+
+            Mod hiddenMapLocations = ModManager.Instance.GetMod("Hidden Map Locations");
+            HiddenMapLocationsEnabled = hiddenMapLocations != null && hiddenMapLocations.Enabled;
+            if (HiddenMapLocationsEnabled)
+            {
+                Debug.Log("[ImmersiveTravel] Hidden Map Locations mod detected");
+            }
+
             //register custom windows
-            UIWindowFactory.RegisterCustomUIWindow(UIWindowType.TravelPopUp, typeof(ImmersiveTravelPopUp));
+            if (!TravelOptionsEnabled)
+            {
+                UIWindowFactory.RegisterCustomUIWindow(UIWindowType.TravelMap, typeof(CarriageMap));
+            }
+
+            if (Settings.GetValue<bool>("General", "DisableNormalTravel"))
+            {
+                UIWindowFactory.RegisterCustomUIWindow(UIWindowType.TravelPopUp, typeof(ImmersiveTravelPopUp));
+            }
 
             //register custom factions
             Debug.Log("[ImmersiveTravel] registering factions");
@@ -93,22 +125,6 @@ namespace ImmersiveTravel
                     Services.RegisterGuildService(8642, TravellersGuild.CarriageTravelService, "Carriage Travel");
                     Services.RegisterGuildService(8643, TravellersGuild.ShipTravelService, "Ship Travel");
                 }
-            }
-
-            //check for mods to integrate
-            Debug.Log("[ImmersiveTravel] checking for other mods to integrate");
-            Mod basicRoads = ModManager.Instance.GetMod("BasicRoads");
-            BasicRoadsEnabled = basicRoads != null && basicRoads.Enabled;
-            if (BasicRoadsEnabled)
-            {
-                Debug.Log("[ImmersiveTravel] BasicRoads mod detected");
-            }
-
-            Mod hiddenMapLocations = ModManager.Instance.GetMod("Hidden Map Locations");
-            HiddenMapLocationsEnabled = hiddenMapLocations != null && hiddenMapLocations.Enabled;
-            if (HiddenMapLocationsEnabled)
-            {
-                Debug.Log("[ImmersiveTravel] Hidden Map Locations mod detected");
             }
 
             //done
