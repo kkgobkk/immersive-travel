@@ -47,49 +47,102 @@ namespace DaggerfallWorkshop.Game.Guilds
         //custom guild service for the carriage drivers
         public static void CarriageTravelService(IUserInterfaceWindow window)
         {
-            CarriageMap carriageTravelMap = new CarriageMap(DaggerfallUI.UIManager, true);
-            DaggerfallUI.UIManager.PushWindow(carriageTravelMap);
+            if (GameManager.Instance.AreEnemiesNearby())
+            {
+                DaggerfallUI.MessageBox(TextManager.Instance.GetLocalizedText("cannotTravelWithEnemiesNearby"));
+            }
+            else
+            {
+                CarriageMap carriageTravelMap = new CarriageMap(DaggerfallUI.UIManager, true);
+                DaggerfallUI.UIManager.PushWindow(carriageTravelMap);
+            }
         }
 
         //custom guild service for ship captain
         public static void ShipTravelService(IUserInterfaceWindow window)
         {
-            SeafarersMap shipTravelMap = new SeafarersMap(DaggerfallUI.UIManager);
-            DaggerfallUI.UIManager.PushWindow(shipTravelMap);
+            if (GameManager.Instance.AreEnemiesNearby())
+            {
+                DaggerfallUI.MessageBox(TextManager.Instance.GetLocalizedText("cannotTravelWithEnemiesNearby"));
+            }
+            else
+            {
+                SeafarersMap shipTravelMap = new SeafarersMap(DaggerfallUI.UIManager);
+                DaggerfallUI.UIManager.PushWindow(shipTravelMap);
+            }
         }
 
         public override TextFile.Token[] TokensEligible(PlayerEntity playerEntity)
         {
-            TextFile.Token[] tmp = 
+            if (ImmersiveTravel.ImmersiveTravel.WODEnabled)
             {
-                TextFile.CreateTextToken("Greetings, adventurer!"), newLine, newLine,
-                TextFile.CreateTextToken("Are you looking for transportation?"), newLine,
-                TextFile.CreateTextToken("Wether it's for pleasure or business, the"), newLine,
-                TextFile.CreateTextToken("Travellers Guild will take you anywhere in"), newLine,
-                TextFile.CreateTextToken("the Iliac Bay for a reasonable price."), newLine,
-                TextFile.CreateTextToken("We have plenty of carriages outside the"), newLine,
-                TextFile.CreateTextToken("gates of every major town, and you'll find"), newLine,
-                TextFile.CreateTextToken("our ships at every dock in the bay! If you"), newLine,
-                TextFile.CreateTextToken("wish to travel with the Guild, all you need"), newLine,
-                TextFile.CreateTextToken("to do is sign this brief contract right here!"), newLine,
-
-            };
-            return tmp;
+                TextFile.Token[] tmp =
+                {
+                    TextFile.CreateTextToken("Greetings, adventurer!"), newLine, newLine,
+                    TextFile.CreateTextToken("Are you looking for transportation?"), newLine,
+                    TextFile.CreateTextToken("Wether it's for pleasure or business, the"), newLine,
+                    TextFile.CreateTextToken("Travellers Guild will take you anywhere in"), newLine,
+                    TextFile.CreateTextToken("the Iliac Bay for a reasonable price."), newLine,
+                    TextFile.CreateTextToken("We have plenty of carriages outside the"), newLine,
+                    TextFile.CreateTextToken("gates of every major town, and you'll find"), newLine,
+                    TextFile.CreateTextToken("our ships at every dock in the bay! If you"), newLine,
+                    TextFile.CreateTextToken("wish to travel with the Guild, all you need"), newLine,
+                    TextFile.CreateTextToken("to do is sign this brief contract right here!")
+                };
+                return tmp;
+            }
+            else
+            {
+                TextFile.Token[] tmp =
+                {
+                    TextFile.CreateTextToken("Greetings, adventurer!"), newLine, newLine,
+                    TextFile.CreateTextToken("Are you looking for transportation?"), newLine,
+                    TextFile.CreateTextToken("Wether it's for pleasure or business, the"), newLine,
+                    TextFile.CreateTextToken("Travellers Guild will take you anywhere in"), newLine,
+                    TextFile.CreateTextToken("the Iliac Bay for a reasonable price."), newLine,
+                    TextFile.CreateTextToken("We have plenty of carriages outside the"), newLine,
+                    TextFile.CreateTextToken("gates of every major town! If you wish to"), newLine,
+                    TextFile.CreateTextToken("travel with the Guild, all you need to do"), newLine,
+                    TextFile.CreateTextToken("is sign this brief contract right here!")
+                };
+                return tmp;
+            }
+            return null;
         }
 
         public override TextFile.Token[] TokensWelcome()
         {
-            TextFile.Token[] tmp = 
+            if (ImmersiveTravel.ImmersiveTravel.WODEnabled)
             {
-                TextFile.CreateTextToken("Great! Whenever you're ready, just come to me"), newLine,
-                TextFile.CreateTextToken("and tell me where you need to go. I'll take care"), newLine,
-                TextFile.CreateTextToken("of the rest. Just know that extras like sleeping"), newLine,
-                TextFile.CreateTextToken("at an inn or taking a ferry aren't covered in the"), newLine,
-                TextFile.CreateTextToken("fee. Oh, and remember: if you need to use the"), newLine,
-                TextFile.CreateTextToken("Guild's services again, you'll find carriage drivers"), newLine,
-                TextFile.CreateTextToken("just outside the gates of most large towns."), newLine,
-            };
-            return tmp;
+                TextFile.Token[] tmp = 
+                {
+                    TextFile.CreateTextToken("Great! Whenever you're ready, just come to me"), newLine,
+                    TextFile.CreateTextToken("and tell me where you need to go. I'll take care"), newLine,
+                    TextFile.CreateTextToken("of the rest. Just know that extras like sleeping"), newLine,
+                    TextFile.CreateTextToken("at an inn or taking a ferry aren't covered in the"), newLine,
+                    TextFile.CreateTextToken("fee. Oh, and remember: if you need to use the"), newLine,
+                    TextFile.CreateTextToken("Guild's services again, you'll find carriage drivers"), newLine,
+                    TextFile.CreateTextToken("just outside the gates of most large towns, and ship"), newLine,
+                    TextFile.CreateTextToken("captains at every dock in the whole Iliac Bay!")
+                };
+
+                return tmp;
+            }
+            else
+            {
+                TextFile.Token[] tmp = 
+                {
+                    TextFile.CreateTextToken("Great! Whenever you're ready, just come to me"), newLine,
+                    TextFile.CreateTextToken("and tell me where you need to go. I'll take care"), newLine,
+                    TextFile.CreateTextToken("of the rest. Just know that extras like sleeping"), newLine,
+                    TextFile.CreateTextToken("at an inn or taking a ferry aren't covered in the"), newLine,
+                    TextFile.CreateTextToken("fee. Oh, and remember: if you need to use the"), newLine,
+                    TextFile.CreateTextToken("Guild's services again, you'll find carriage drivers"), newLine,
+                    TextFile.CreateTextToken("just outside the gates of most large towns.")
+                };
+                return tmp;
+            }
+            return null;
         }
 
         public override TextFile.Token[] TokensExpulsion()
@@ -98,7 +151,7 @@ namespace DaggerfallWorkshop.Game.Guilds
             {
                 TextFile.CreateTextToken("It seems your travelling permit has expired."), newLine,
                 TextFile.CreateTextToken("You know, bureaucracy! I can sign a new one"), newLine,
-                TextFile.CreateTextToken("for you if you wish, all you need to do is ask!"), newLine,
+                TextFile.CreateTextToken("for you if you wish, all you need to do is ask!")
             };
             return tmp;
         }

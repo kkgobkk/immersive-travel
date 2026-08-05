@@ -121,7 +121,7 @@ namespace ImmersiveTravel{
                             if (isCapital(playerGPS.CurrentMapID))
                                 messageBox.SetText("To reach that location, you must travel to the capital of that region and take a carriage from there.");
                             else
-                                messageBox.SetText("This carriage can't travel outside the region. Find a carriage in the capital or travel by sea.");
+                                messageBox.SetText("This carriage won't travel outside the region. Find a carriage in the capital or travel by sea.");
                             Button okButton = messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.OK, true);
                             messageBox.OnButtonClick += (_sender, button) =>{CloseWindow();};
                             uiManager.PushWindow(messageBox);
@@ -136,7 +136,7 @@ namespace ImmersiveTravel{
                     else
                     {
                         DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, this);
-                        messageBox.SetText("The Travellers Guild won't take you to this type of location.");
+                        messageBox.SetText("The driver won't take you to this type of location.");
                         Button okButton = messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.OK, true);
                         messageBox.OnButtonClick += (_sender, button) =>{CloseWindow();};
                         uiManager.PushWindow(messageBox);

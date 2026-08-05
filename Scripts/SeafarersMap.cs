@@ -21,9 +21,7 @@ namespace ImmersiveTravel{
         protected static bool showOnlyDocks = ImmersiveTravel.Settings.GetValue<bool>("ShipTravel", "ShowOnlyDocks");
         protected static bool reducedRangeInVillages = ImmersiveTravel.Settings.GetValue<bool>("ShipTravel", "LimitedRangeInSmallDocks");
 
-        public SeafarersMap(IUserInterfaceManager uiManager) : base(uiManager){
-            Debug.LogFormat("current player mapID: {0}", GameManager.Instance.PlayerGPS.CurrentMapID);
-        }
+        public SeafarersMap(IUserInterfaceManager uiManager) : base(uiManager){}
 
         protected override void CreatePopUpWindow()
         {

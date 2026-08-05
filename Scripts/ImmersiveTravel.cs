@@ -22,6 +22,7 @@ namespace ImmersiveTravel
         static public bool BasicRoadsEnabled { get; private set; }
         static public bool HiddenMapLocationsEnabled { get; private set; }
         static public bool TravelOptionsEnabled { get; private set; }
+        static public bool WODEnabled { get; private set; }
         
         /*direction constants from BasicRoadsTexturing (needed to
         draw BasicRoads roads and tracks on the travel map windows)*/
@@ -51,6 +52,10 @@ namespace ImmersiveTravel
             }
 
             Mod travelOptions = ModManager.Instance.GetMod("TravelOptions");
+            if (travelOptions == null)
+            {
+                travelOptions = ModManager.Instance.GetMod("TravelOptions_IT_compat");
+            }
             TravelOptionsEnabled = travelOptions != null && travelOptions.Enabled;
             if (TravelOptionsEnabled)
             {
@@ -63,6 +68,15 @@ namespace ImmersiveTravel
             {
                 Debug.Log("[ImmersiveTravel] Hidden Map Locations mod detected");
             }
+
+            Mod WordlOfDaggerfall = ModManager.Instance.GetMod("World of Daggerfall");
+            Mod WODTerrain = ModManager.Instance.GetMod("World of Daggerfall - Terrain");
+            WODEnabled = WordlOfDaggerfall != null && WordlOfDaggerfall.Enabled && WODTerrain != null && WODTerrain.Enabled;
+            if (BasicRoadsEnabled)
+            {
+                Debug.Log("[ImmersiveTravel] WOD and WOD terrain detected");
+            }
+
 
             //register custom windows
             if (!TravelOptionsEnabled)
@@ -109,15 +123,15 @@ namespace ImmersiveTravel
            
             if (!success)
             {
-                Debug.Log("[ImmersiveTravel] could not register custom factions!");
+                Debug.Log("[ImmersiveTravel] Error: could not register custom factions!");
             }
             else
             {
                 //register custom guilds
-                Debug.Log("[ImmersiveTravel] registering guilds");
+                Debug.Log("[ImmersiveTravel] registering guild");
                 if (!GuildManager.RegisterCustomGuild(FactionFile.GuildGroups.GGroup16, typeof(TravellersGuild)))
                 {
-                    Debug.Log("[ImmersiveTravel] GGgroup16 already in use!");
+                    Debug.Log("[ImmersiveTravel] Error: GGgroup16 already in use!");
                 }
                 else{
                     //register custom services

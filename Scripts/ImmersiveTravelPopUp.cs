@@ -60,7 +60,7 @@ namespace ImmersiveTravel
                     };
                     if (CarriageMap.IsDestinationValid(summary.LocationType))
                     {
-                        messageBox.SetText("You must hire a carriage driver to travel there.");
+                        messageBox.SetText("You must take a carriage to initiate fast travel. Carriage drivers are stationed outside the gates of large cities.");
                         Button okButton = messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.OK, true);
                         // Push the message box so it displays immediately.
                         uiManager.PushWindow(messageBox);
@@ -85,7 +85,7 @@ namespace ImmersiveTravel
         {
             TravelShip = false;
             DaggerfallMessageBox messageBox = new DaggerfallMessageBox(uiManager, this);
-            messageBox.SetText("You must talk to a sailor to initiate ship travel.");
+            messageBox.SetText("You must find a ship to initiate ship travel. Ship captains can be found on docks along the coast.");
             Button okButton = messageBox.AddButton(DaggerfallMessageBox.MessageBoxButtons.OK, true);
             messageBox.OnButtonClick += (_sender, button) =>
             {
