@@ -9,6 +9,7 @@ using DaggerfallConnect.Arena2;
 using DaggerfallWorkshop;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Guilds;
+using DaggerfallWorkshop.Game.UserInterface;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
 using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
@@ -96,7 +97,7 @@ namespace ImmersiveTravel
                 id = 8642,
                 parent = 0,
                 type = 15,
-                name = "Travellers Guild",
+                name = "Carriage Drivers",
                 summon = -1,
                 region = -1,
                 power = 100,
@@ -111,7 +112,7 @@ namespace ImmersiveTravel
                 id = 8643,
                 parent = 8642,
                 type = 15,
-                name = "Travellers Guild Seafarers",
+                name = "Sailors",
                 summon = -1,
                 region = -1,
                 power = 100,
@@ -127,23 +128,43 @@ namespace ImmersiveTravel
             }
             else
             {
-                //register custom guilds
-                Debug.Log("[ImmersiveTravel] registering guild");
-                if (!GuildManager.RegisterCustomGuild(FactionFile.GuildGroups.GGroup16, typeof(TravellersGuild)))
-                {
-                    Debug.Log("[ImmersiveTravel] Error: GGgroup16 already in use!");
-                }
-                else{
-                    //register custom services
-                    Debug.Log("[ImmersiveTravel] registering services");
-                    Services.RegisterGuildService(8642, TravellersGuild.CarriageTravelService, "Carriage Travel");
-                    Services.RegisterGuildService(8643, TravellersGuild.ShipTravelService, "Ship Travel");
-                }
+                //register custom services
+                Debug.Log("[ImmersiveTravel] registering services");
+                Services.RegisterMerchantService(8642, ImmersiveTravel.CarriageTravelService, "Fast Travel");
+                Services.RegisterMerchantService(8643, ImmersiveTravel.ShipTravelService, "Fast Travel");
             }
 
             //done
             mod.IsReady = true;
             Debug.Log("[ImmersiveTravel] finished mod init");
+        }
+
+        //custom merchant service for the carriage drivers
+        public static void CarriageTravelService(IUserInterfaceWindow window)
+        {
+            if (GameManager.Instance.AreEnemiesNearby())
+            {
+                DaggerfallUI.MessageBox(TextManager.Instance.GetLocalizedText("cannotTravelWithEnemiesNearby"));
+            }
+            else
+            {
+                CarriageMap carriageTravelMap = new CarriageMap(DaggerfallUI.UIManager, true);
+                DaggerfallUI.UIManager.PushWindow(carriageTravelMap);
+            }
+        }
+
+        //custom merchant service for ship captain
+        public static void ShipTravelService(IUserInterfaceWindow window)
+        {
+            if (GameManager.Instance.AreEnemiesNearby())
+            {
+                DaggerfallUI.MessageBox(TextManager.Instance.GetLocalizedText("cannotTravelWithEnemiesNearby"));
+            }
+            else
+            {
+                SeafarersMap shipTravelMap = new SeafarersMap(DaggerfallUI.UIManager);
+                DaggerfallUI.UIManager.PushWindow(shipTravelMap);
+            }
         }
     }
 }
