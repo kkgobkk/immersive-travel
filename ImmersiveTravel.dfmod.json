@@ -26,15 +26,30 @@
         {
             "Name": "traveloptions",
             "IsOptional": true,
-            "IsPeer": true
+            "IsPeer": false
         },
         {
             "Name": "basicroads",
-            "IsOptional": false,
+            "IsOptional": true,
             "IsPeer": false
         },
         {
             "Name": "hidden map locations",
+            "IsOptional": true,
+            "IsPeer": false
+        },
+        {
+            "Name": "world of daggerfall",
+            "IsOptional": true,
+            "IsPeer": false
+        },
+        {
+            "Name": "world of daggerfall - terrain",
+            "IsOptional": true,
+            "IsPeer": false
+        },
+        {
+            "Name": "traveloptions_it_compat",
             "IsOptional": true,
             "IsPeer": false
         }
